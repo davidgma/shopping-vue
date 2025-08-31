@@ -28,27 +28,32 @@ export const AddressesView = {
 
   setup() {
 
-    // const spreadsheetId = ref("spreadsheet id");
-    // const clientId = ref("client id");
-    // const range = ref("List!A2:C");
     const theDefault = {
       spreadsheetId: "spreadsheet id",
       clientId: "client id",
-      range: "List!A2:C"
+      range: "List!A2:C",
+      version: 1
     }
 
-    const state = useStorage('vue-use-local-storage', theDefault)
+    const state = useStorage('local', theDefault, localStorage, {mergeDefaults: true });
+    console.log("Under useStorage:");
+    console.log(localStorage.getItem('local'));
+    console.log("spreadsheetId: " + state.value.spreadsheetId);
+    console.log("clientId: " + state.value.clientId);
+    console.log("range:" + state.value.range);
+    console.log("version:" + state.value.version);
 
     function onSubmit() {
       console.log("onSubmit clicked")
-      console.log("spreadsheet id: " + spreadsheetId.value);
-      console.log("clientId: " + clientId.value);
-      console.log("range:"  + range.value);
+      console.log("spreadsheet id: " + state.value.spreadsheetId);
+      console.log("clientId: " + state.value.clientId);
+      console.log("range:" + state.value.range);
+      console.log("version:" + state.value.version);
     }
 
     return {
       onSubmit, state
-      
+
     };
   }
 
