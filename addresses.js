@@ -1,9 +1,12 @@
-const AddressesView = {
+// import { createApp, ref, reactive, onMounted } from 'vue'
+
+export const AddressesView = {
   template: `
     <br>
-<form @submit="onSubmit()">
+  <form @submit="onSubmit()">
 	<div class="form-group">
-		<label>Spreadsheet ID (the long text between the /d/ and the /edit/ in the address)</label>
+	
+  <label>Spreadsheet ID (the long text between the /d/ and the /edit/ in the address)</label>
 		<input type="text" class="form-control" id="sheetId" required  name="sheetId">
 	</div>
 
