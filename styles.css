@@ -1,0 +1,90 @@
+body {
+    font-family: Ubuntu, Arial, Helvetica, sans-serif;
+    font-size: 3vh;
+    color: #369;
+}
+
+h1 {
+    color: #369;
+    font-family: Ubuntu, Arial, Helvetica, sans-serif;
+    font-size: 250%;
+}
+
+h3 {
+    font-size: 3vh;
+    color: #369;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+section {
+    color: black;
+    border-style: solid;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-color: darkseagreen;
+
+}
+
+section.gray {
+    background-color: lightgray;
+}
+
+img {
+    width: 20vh;
+    height: 20vh;
+}
+
+
+button {
+    background-color: #04aa6d;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 3vh;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.addresses-button {
+    font-family: Ubuntu, Arial;
+    background-color: #369;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.addresses-button:hover {
+    background-color: rgb(5, 114, 63);
+}
+
+
+
+.form-control {
+    display: block;
+    width: 100%;
+    line-height: 1.5;
+    padding: .375rem .75rem;
+    margin-top: .375rem;
+    margin-bottom: .375rem;
+}

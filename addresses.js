@@ -2,7 +2,7 @@
 
 export const AddressesView = {
   template: `
-    <br>
+ 
   <form @submit="onSubmit()">
 	<div class="form-group">
 	
@@ -15,10 +15,9 @@ export const AddressesView = {
 		<input type="text" class="form-control" id="range" required name="range">
 	</div>
 
-	<button type="submit" class="btn btn-success">Submit</button>
+	<button type="submit" class="btn btn-success addresses-button">Submit</button>
 
 </form>
-<br>
   `,
 
   setup() {
