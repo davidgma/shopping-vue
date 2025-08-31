@@ -36,7 +36,7 @@ export const AddressesView = {
     }
 
     const state = useStorage('local', theDefault, localStorage, {mergeDefaults: true });
-    console.log("Under useStorage:");;
+    console.log("Under useStorage:");
     console.log(localStorage.getItem('local'));
     console.log("spreadsheetId: " + state.value.spreadsheetId);
     console.log("clientId: " + state.value.clientId);
