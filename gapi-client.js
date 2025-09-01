@@ -31,7 +31,9 @@ async function initClient() {
         console.log("APIkey: " + state.value.APIkey);
         gapi.client.init({
             apiKey: state.value.APIkey,
-            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"]
+            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            clientId: state.value.clientId,
+            scope: "https://www.googleapis.com/auth/spreadsheets"
         }, () => {
             resolve();
         },
