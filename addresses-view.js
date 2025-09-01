@@ -41,12 +41,13 @@ export const AddressesView = {
 
 </form>
 
-<button @click="refreshToken" type="button">Refresh token</button>
+
 <setup-view />
   `,
 
   setup() {
 
+    //<button @click="refreshToken" type="button">Refresh token</button>
     // console.log("Under useStorage:");
     // console.log(localStorage.getItem('local'));
     // console.log("spreadsheetId: " + state.value.spreadsheetId);
