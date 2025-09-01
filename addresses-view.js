@@ -6,7 +6,7 @@ const theDefault = {
   spreadsheetId: "spreadsheet id",
   clientId: "client id",
   range: "List!A2:C",
-  token: "none",
+  token: "",
   version: 1
 }
 
