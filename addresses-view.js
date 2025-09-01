@@ -1,5 +1,6 @@
 // import { ref } from 'vue';
 import { useStorage } from 'vueuse';
+import { promptForToken } from './setup-loading.js';
 
 const theDefault = {
   spreadsheetId: "spreadsheet id",
@@ -33,13 +34,12 @@ export const AddressesView = {
 	</div>
 
 </form>
+
+<button @click="refreshToken" type="button">Refresh token</button>
 <setup-view />
   `,
 
   setup() {
-
-
-
 
     console.log("Under useStorage:");
     console.log(localStorage.getItem('local'));
@@ -54,8 +54,13 @@ export const AddressesView = {
       console.log("in handleCredentialResponse");
     }
 
+    function refreshToken() {
+      console.log("refreshing token");
+      promptForToken();
+    }
+
     return {
-      state
+      state, refreshToken
 
     };
   }

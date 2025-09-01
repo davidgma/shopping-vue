@@ -5,69 +5,34 @@ import { state } from './addresses-view.js';
 let credentialResponse = null; // credential response
 
 function handleCredentialResponse(response) {
-    setupResults.value.push("In handleCredentialResponse");
+    // setupResults.value.push("In handleCredentialResponse");
 
     credentialResponse = response.credential;
     state.value.token = response.credential;
-    setupResults.value.push("Encoded JWT ID token: " + response.credential);
+    // setupResults.value.push("Encoded JWT ID token: " + response.credential);
 
     const responsePayload = decodeJwtResponse(response.credential);
-
     setupResults.value.push("Decoded JWT ID token: ");
-    setupResults.value.push("ID: " + responsePayload.sub);
-    setupResults.value.push('Full Name: ' + responsePayload.name);
-    setupResults.value.push('Given Name: ' + responsePayload.given_name);
-    setupResults.value.push('Family Name: ' + responsePayload.family_name);
-    setupResults.value.push("Image URL: " + responsePayload.picture);
-    setupResults.value.push("Email: " + responsePayload.email);
+    setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
+
 }
 window.onload = function () {
-    // setupResults.value.push("clientId from within setup-loading.js: " + state.value.clientId);
 
     // Check to see whether there is already a JWT ID token
     if (state.value.token === "" || state.value.token === "none") {
         setupResults.value.push("No JWT token is available - fill in the above details then click 'Sign in' to get one.");
+        promptForToken();
 
-        google.accounts.id.initialize({
-            auto_select: true,
-            client_id: state.value.clientId,
-            callback: handleCredentialResponse,
-            prompt_parent_id: 'google',
-            button_auto_select: true,
-            use_fedcm_for_prompt: true,
-            context: "use"
-        });
-
-        google.accounts.id.renderButton(
-            document.getElementById("google"),
-            { theme: "outline", size: "large" }  // customization attributes
-        );
-    
-        google.accounts.id.prompt((notification) => {
-            setupResults.value.push("Notification: ");
-            setupResults.value.push(JSON.stringify(notification));
-        }); // also display the One Tap dialog
     }
     else {
+        // There is already a JWT token
         const responsePayload = decodeJwtResponse(state.value.token);
+        console.log(responsePayload);
         setupResults.value.push("A token is already available.");
         setupResults.value.push("Decoded JWT ID token: ");
-        setupResults.value.push("ID: " + responsePayload.sub);
-        setupResults.value.push('Full Name: ' + responsePayload.name);
-        setupResults.value.push('Given Name: ' + responsePayload.given_name);
-        setupResults.value.push('Family Name: ' + responsePayload.family_name);
-        setupResults.value.push("Image URL: " + responsePayload.picture);
-        setupResults.value.push("Email: " + responsePayload.email);
+        setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
+
     }
-
-
-
-
-    
-
-
-    
-
 
 }
 
@@ -79,4 +44,40 @@ function decodeJwtResponse(token) {
     }).join(''));
 
     return JSON.parse(jsonPayload);
+}
+
+function formatJWT(token) {
+    const a = new Array();
+    a.push("ID: " + token.sub);
+    a.push('Full Name: ' + token.name);
+    a.push('Given Name: ' + token.given_name);
+    a.push('Family Name: ' + token.family_name);
+    a.push("Image URL: " + token.picture);
+    a.push("Email: " + token.email);
+    a.push("Client ID: " + token.aud);
+    a.push("Google account ID: " + token.sub);
+    a.push("Creation time: " + new Date(token.iat * 1000).toString());
+    a.push("Expiration time: " + new Date(token.exp * 1000).toString());
+    return a;
+}
+
+// Show the google sign in button 
+export function promptForToken() {
+    google.accounts.id.initialize({
+        auto_select: true,
+        client_id: state.value.clientId,
+        callback: handleCredentialResponse,
+        prompt_parent_id: 'google'
+    });
+
+    google.accounts.id.renderButton(
+        document.getElementById("google"),
+        { theme: "outline", size: "large" }  // customization attributes
+    );
+
+    google.accounts.id.prompt((notification) => {
+        setupResults.value = [];
+        // setupResults.value.push("Notification: ");
+        // setupResults.value.push(JSON.stringify(notification));
+    }); // also display the One Tap dialog
 }
