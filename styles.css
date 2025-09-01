@@ -88,3 +88,10 @@ button {
     margin-top: .375rem;
     margin-bottom: .375rem;
 }
+
+li.setup-results {
+
+        list-style-type: none;
+
+      
+}

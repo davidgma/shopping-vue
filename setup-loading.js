@@ -1,36 +1,44 @@
 
-
+import { setupResults } from './setup-view.js';
 import { state } from './addresses-view.js';
 
 let credentialResponse = null; // credential response
 
-console.log("monitoring loading of setup files");
+setupResults.value.push("Monitoring loading of setup files.");
 
 function handleCredentialResponse(response) {
-    console.log("In handleCredentialResponse");
+    setupResults.value.push("In handleCredentialResponse");
+
     credentialResponse = response.credential;
-    console.log("Encoded JWT ID token: " + response.credential);
+    setupResults.value.push("Encoded JWT ID token: " + response.credential);
 }
 window.onload = function () {
-    console.log("clientId from within setup-loading.js: " + state.value.clientId);
+    setupResults.value.push("clientId from within setup-loading.js: " + state.value.clientId);
 
     google.accounts.id.initialize({
         client_id: state.value.clientId,
         callback: handleCredentialResponse
     });
 
-    console.log("After call to initialize");
+    setupResults.value.push("After call to initialize");
     if (credentialResponse === null) {
-        console.log("credentialResponse is still null");
+        setupResults.value.push("credentialResponse is still null");
     }
     else {
-        console.log("credentialResponse:");
-        console.log(credentialResponse);
+        setupResults.value.push("credentialResponse:");
+        setupResults.value.push(JSON.stringify(credentialResponse));
     }
+
 
     google.accounts.id.renderButton(
         document.getElementById("buttonDiv"),
         { theme: "outline", size: "large" }  // customization attributes
     );
-    //zx
+
+    google.accounts.id.prompt((notification) => {
+        console.log("Notification: ");
+        console.log(notification);
+    }); // also display the One Tap dialog
+
+
 }
