@@ -27,7 +27,7 @@ window.onload = function () {
     else {
         // There is already a JWT token
         const responsePayload = decodeJwtResponse(state.value.token);
-        console.log(responsePayload);
+        // console.log(responsePayload);
         setupResults.value.push("A token is already available.");
         setupResults.value.push("Decoded JWT ID token: ");
         setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
@@ -37,6 +37,10 @@ window.onload = function () {
         if (expiry < new Date()) {
             setupResults.value.push("Token has expired, request another");
             promptForToken();
+        }
+        else { // Theres's a valid token - try getting the test cells
+            
+
         }
 
     }

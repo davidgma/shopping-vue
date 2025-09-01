@@ -5,6 +5,7 @@ import { promptForToken } from './setup-loading.js';
 const theDefault = {
   spreadsheetId: "spreadsheet id",
   clientId: "client id",
+  APIkey: "api key",
   range: "List!A2:C",
   token: "",
   version: 1
@@ -28,6 +29,11 @@ export const AddressesView = {
 		<input v-model="state.clientId" type="text" :placeholder="clientId" class="form-control" id="clientId" name="clientId">
 	</div>
 
+  <div class="form-group">
+		<label>API key</label>
+		<input v-model="state.APIkey" type="text" :placeholder="APIkey" class="form-control" id="APIkey" name="APIkey">
+	</div>
+
 	<div class="form-group">
 		<label>Range for testing e.g. Sheet1!A1:C</label>
 		<input v-model="state.range" type="text" :placeholder="range" class="form-control" id="range" name="range">
@@ -41,18 +47,14 @@ export const AddressesView = {
 
   setup() {
 
-    console.log("Under useStorage:");
-    console.log(localStorage.getItem('local'));
-    console.log("spreadsheetId: " + state.value.spreadsheetId);
-    console.log("clientId: " + state.value.clientId);
-    console.log("range:" + state.value.range);
-    console.log("token:" + state.value.token);
-    console.log("version:" + state.value.version);
-
-
-    function handleCredentialResponse() {
-      console.log("in handleCredentialResponse");
-    }
+    // console.log("Under useStorage:");
+    // console.log(localStorage.getItem('local'));
+    // console.log("spreadsheetId: " + state.value.spreadsheetId);
+    // console.log("clientId: " + state.value.clientId);
+    // console.log("APIkey: " + state.value.APIkey);
+    // console.log("range:" + state.value.range);
+    // console.log("token:" + state.value.token);
+    // console.log("version:" + state.value.version);
 
     function refreshToken() {
       console.log("refreshing token");
