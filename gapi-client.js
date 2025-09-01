@@ -11,7 +11,7 @@ Promise.all(promises).then(async () => {
     await loadClient();
     console.log("gapi client loaded.");
     await initializeGapiClient();
-    gapi.client.setToken(state.value.token);
+    // gapi.client.setToken(state.value.token);
     console.log("gapi client initialized.");
     // getTestData();
     getAllListItems();

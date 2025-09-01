@@ -36,10 +36,10 @@ window.onload = function () {
         const expiry = new Date(responsePayload.exp * 1000);
         if (expiry < new Date()) {
             setupResults.value.push("Token has expired, request another");
-            promptForToken();
+            // promptForToken();
         }
         else { // Theres's a valid token - try getting the test cells
-            
+
 
         }
 
