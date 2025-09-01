@@ -1,6 +1,15 @@
 import { ref } from 'vue';
 import { useStorage } from 'vueuse';
 
+const theDefault = {
+  spreadsheetId: "spreadsheet id",
+  clientId: "client id",
+  range: "List!A2:C",
+  version: 1
+}
+
+export const state = useStorage('local', theDefault, localStorage, { mergeDefaults: true });
+
 export const AddressesView = {
   template: `
  
@@ -24,18 +33,14 @@ export const AddressesView = {
 	<button type="submit" class="btn btn-success addresses-button">Submit</button>
 
 </form>
+<setup-view />
   `,
 
   setup() {
 
-    const theDefault = {
-      spreadsheetId: "spreadsheet id",
-      clientId: "client id",
-      range: "List!A2:C",
-      version: 1
-    }
 
-    const state = useStorage('local', theDefault, localStorage, {mergeDefaults: true });
+
+
     console.log("Under useStorage:");
     console.log(localStorage.getItem('local'));
     console.log("spreadsheetId: " + state.value.spreadsheetId);
