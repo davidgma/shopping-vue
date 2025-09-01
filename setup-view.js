@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-export const setupResults = ref(["JWT token:"]);
+export const setupResults = ref(["Results:"]);
 
 export const SetupView = {
     template: `
