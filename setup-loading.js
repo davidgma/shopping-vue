@@ -17,7 +17,7 @@ function handleCredentialResponse(response) {
 
 }
 window.onload = function () {
-
+    promptForToken();
     // Check to see whether there is already a JWT ID token
     if (state.value.token === "") {
         setupResults.value.push("No JWT token is available - fill in the above details then click 'Sign in' to get one.");
@@ -87,9 +87,7 @@ export function promptForToken() {
         { theme: "outline", size: "large" }  // customization attributes
     );
 
-    google.accounts.id.prompt((notification) => {
-        setupResults.value = [];
-        // setupResults.value.push("Notification: ");
-        // setupResults.value.push(JSON.stringify(notification));
-    }); // also display the One Tap dialog
+    // google.accounts.id.prompt((notification) => {
+    //     setupResults.value = [];
+    // }); // also display the One Tap dialog
 }
