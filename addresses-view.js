@@ -1,10 +1,11 @@
-import { ref } from 'vue';
+// import { ref } from 'vue';
 import { useStorage } from 'vueuse';
 
 const theDefault = {
   spreadsheetId: "spreadsheet id",
   clientId: "client id",
   range: "List!A2:C",
+  token: "none",
   version: 1
 }
 
@@ -14,7 +15,7 @@ export const AddressesView = {
   template: `
 
  
-  <form @submit.prevent="onSubmit()">
+  <form>
 	<div class="form-group">
 	
   <label>Spreadsheet ID (the long text between the /d/ and the /edit/ in the address)</label>
@@ -31,8 +32,6 @@ export const AddressesView = {
 		<input v-model="state.range" type="text" :placeholder="range" class="form-control" id="range" name="range">
 	</div>
 
-	<button type="submit" class="btn btn-success addresses-button">Submit</button>
-
 </form>
 <setup-view />
   `,
@@ -47,22 +46,16 @@ export const AddressesView = {
     console.log("spreadsheetId: " + state.value.spreadsheetId);
     console.log("clientId: " + state.value.clientId);
     console.log("range:" + state.value.range);
+    console.log("token:" + state.value.token);
     console.log("version:" + state.value.version);
 
-    function onSubmit() {
-      console.log("onSubmit clicked")
-      console.log("spreadsheet id: " + state.value.spreadsheetId);
-      console.log("clientId: " + state.value.clientId);
-      console.log("range:" + state.value.range);
-      console.log("version:" + state.value.version);
-    }
 
     function handleCredentialResponse() {
       console.log("in handleCredentialResponse");
     }
 
     return {
-      onSubmit, state
+      state
 
     };
   }
