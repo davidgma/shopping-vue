@@ -26,24 +26,19 @@ window.onload = function () {
     setupResults.value.push("clientId from within setup-loading.js: " + state.value.clientId);
 
     google.accounts.id.initialize({
+        auto_select: true,
         client_id: state.value.clientId,
         callback: handleCredentialResponse,
-        auto_select: true,
-        prompt_parent_id: 'buttonDiv'
+        prompt_parent_id: 'google',
+        button_auto_select: true,
+        use_fedcm_for_prompt: true
     });
 
     setupResults.value.push("After call to initialize");
-    if (credentialResponse === null) {
-        setupResults.value.push("credentialResponse is still null");
-    }
-    else {
-        setupResults.value.push("credentialResponse:");
-        setupResults.value.push(JSON.stringify(credentialResponse));
-    }
 
 
     google.accounts.id.renderButton(
-        document.getElementById("buttonDiv"),
+        document.getElementById("google"),
         { theme: "outline", size: "large" }  // customization attributes
     );
 

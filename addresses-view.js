@@ -12,6 +12,7 @@ export const state = useStorage('local', theDefault, localStorage, { mergeDefaul
 
 export const AddressesView = {
   template: `
+
  
   <form @submit.prevent="onSubmit()">
 	<div class="form-group">
@@ -54,6 +55,10 @@ export const AddressesView = {
       console.log("clientId: " + state.value.clientId);
       console.log("range:" + state.value.range);
       console.log("version:" + state.value.version);
+    }
+
+    function handleCredentialResponse() {
+      console.log("in handleCredentialResponse");
     }
 
     return {
