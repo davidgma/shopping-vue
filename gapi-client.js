@@ -9,22 +9,35 @@ const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
 Promise.all(promises).then(async () => {
   console.log("gis and gapi loaded");
+
+  console.log("calling getTokenClient");
   await getTokenClient();
-  await loadClient();
-  console.log("gapi client loaded.");
-  await initializeGapiClient();
+  console.log("calling gapiLoadClient");
+  await gapiLoadClient();
+  console.log("calling gapiLoadAuth2");
+  await gapiLoadAuth2();
+  console.log("finished calling gapiLoadAuth2");
+  console.log("calling initTokenClient");
+  await initTokenClient();
+  console.log("finished calling initTokenClient");
+  // console.log("calling initializeGapiClient");
+  // await await initializeGapiClient();
+  // console.log("finished calling initializeGapiClient");
+  // console.log("calling initializeGapiAuth2");
+  // await initializeGapiAuth2();
+  // console.log("finished calling initializeGapiAuth2");
   //gapi.client.setToken(state.value.token);
-  console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
-  if (gapi.client.getToken() === null) {
-    // Prompt the user to select a Google Account and ask for consent to share their data
-    // when establishing a new session.
-    tokenClient.requestAccessToken({prompt: 'consent'});
-  } else {
-    // Skip display of account chooser and consent dialog for an existing session.
-    tokenClient.requestAccessToken({prompt: ''});
-  }
-  console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
-  console.log("gapi client initialized.");
+  // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
+  // if (gapi.client.getToken() === null) {
+  //   // Prompt the user to select a Google Account and ask for consent to share their data
+  //   // when establishing a new session.
+  //   tokenClient.requestAccessToken({ prompt: 'consent' });
+  // } else {
+  //   // Skip display of account chooser and consent dialog for an existing session.
+  //   tokenClient.requestAccessToken({ prompt: '' });
+  // }
+  // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
+  // console.log("gapi client initialized.");
   // getTestData();
   writeTest();
   // getAllListItems();
@@ -41,11 +54,11 @@ async function getTokenClient() {
 }
 
 async function gotToken() {
-console.log("in gotToken");
+  console.log("in gotToken");
 
 }
 
-async function loadClient() {
+async function gapiLoadClient() {
   return new Promise((resolve) => {
     gapi.load("client", () => {
       resolve();
@@ -57,12 +70,45 @@ async function loadClient() {
   });
 }
 
+async function gapiLoadAuth2() {
+  return new Promise((resolve) => {
+    gapi.load("auth2", () => {
+      resolve();
+    },
+      (error) => {
+        console.log("Error loading client: "
+          + JSON.stringify(error));
+      });
+  });
+}
+
+// this doesn't work
 async function initializeGapiClient() {
   await gapi.client.init({
     apiKey: state.value.APIkey,
     discoveryDocs: [DISCOVERY_DOC]
   });
 }
+
+// this doesn't work either
+async function initializeGapiAuth2() {
+  await gapi.auth2.init({
+    client_id: state.value.clientId
+  });
+}
+
+async function initTokenClient() {
+  return new Promise((resolve, revoke) => {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: state.value.clientId,
+      scope: SCOPES,
+      callback: (response) => {
+        resolve(response);
+      },
+    });
+
+  });
+} 
 
 async function getTestData() {
   let response;
@@ -158,13 +204,17 @@ class ListItem {
 
 async function writeTest() {
   console.log("in writeTest");
+  console.log("gapi.client:");
+  console.log(gapi.client);
+  console.log("gapi.auth2:");
+  console.log(gapi.auth2);
   let response;
   try {
     response = await gapi.client.sheets.spreadsheets.values.update({
       spreadsheetId: state.value.spreadsheetId,
       range: "notes!C2:C2",
       valueInputOption: 'USER_ENTERED',
-      body: {values: [[7]]}
+      body: { values: [[7]] }
     });
   } catch (err) {
     setupResults.value.push("Error updating spreadsheet data: " + err.result.error.message);

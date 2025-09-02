@@ -3,16 +3,16 @@
 const promises = [];
 let gisPromise;
 let gapiPromise;
-let accountInitPromise;
+// let accountInitPromise;
 promises.push(new Promise((resolve, reject) => {
     gisPromise = {resolve, reject}
 }));
 promises.push(new Promise((resolve, reject) => {
     gapiPromise = {resolve, reject}
 }));
-promises.push(new Promise((resolve, reject) => {
-    accountInitPromise = {resolve, reject}
-}));
+// promises.push(new Promise((resolve, reject) => {
+//     accountInitPromise = {resolve, reject}
+// }));
 
 
 function gisLoaded() {
@@ -25,7 +25,7 @@ function gapiLoaded() {
     gapiPromise.resolve();
 }
 
-function accountInitLoaded() {
-    console.log("google.accounts.id.initialize loaded and called back");
-    accountInitPromise.resolve();
-}
+// function accountInitLoaded() {
+//     console.log("google.accounts.id.initialize loaded and called back");
+//     accountInitPromise.resolve();
+// }
