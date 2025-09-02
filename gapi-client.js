@@ -14,7 +14,16 @@ Promise.all(promises).then(async () => {
   console.log("gapi client loaded.");
   await initializeGapiClient();
   //gapi.client.setToken(state.value.token);
-  console.log("gapi.client.getToken() === null:" + gapi.client.getToken() === null);
+  console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
+  if (gapi.client.getToken() === null) {
+    // Prompt the user to select a Google Account and ask for consent to share their data
+    // when establishing a new session.
+    tokenClient.requestAccessToken({prompt: 'consent'});
+  } else {
+    // Skip display of account chooser and consent dialog for an existing session.
+    tokenClient.requestAccessToken({prompt: ''});
+  }
+  console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
   console.log("gapi client initialized.");
   // getTestData();
   writeTest();
@@ -50,10 +59,8 @@ async function loadClient() {
 
 async function initializeGapiClient() {
   await gapi.client.init({
-    // apiKey: state.value.APIkey,
-    discoveryDocs: [DISCOVERY_DOC],
-    clientId: state.value.clientId,
-    scope: SCOPES
+    apiKey: state.value.APIkey,
+    discoveryDocs: [DISCOVERY_DOC]
   });
 }
 

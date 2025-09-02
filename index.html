@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="importmap">
+    {
+    "imports": {
+      "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+      "vueuse": "https://cdn.jsdelivr.net/npm/@vueuse/core@10.7.2/index.mjs/+esm"
+    }
+  }
+</script>
+  <link rel="stylesheet" href="styles.css" />
+  <title>Shopping</title>
+</head>
+
+<body>
+  <h1>Shopping List</h1>
+  <div id="google"></div>
+  <div id="vueapp1">
+    <addresses-view class="addresses" />
+  </div>
+  <script src="load-monitor.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+  <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+  <script type="module" src="addresses-view.js"></script>
+  <script type="module" src="vue-app1.js"></script>
+  <script type="module" src="setup-loading.js"></script>
+  <script type="module" src="gapi-client.js"></script>
+
+</body>
+
+</html>
