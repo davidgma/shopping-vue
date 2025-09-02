@@ -23,13 +23,13 @@ Promise.all(promises).then(async () => {
   await gapiLoadAuth2();
   console.log("finished calling gapiLoadAuth2");
 
-  // console.log("calling initializeGapiClient");
-  // await await initializeGapiClient();
-  // console.log("finished calling initializeGapiClient");
+  console.log("calling initializeGapiClient");
+  await initializeGapiClient();
+  console.log("finished calling initializeGapiClient");
   // console.log("calling initializeGapiAuth2");
   // await initializeGapiAuth2();
   // console.log("finished calling initializeGapiAuth2");
-  // gapi.client.setToken(state.value.accessToken); this didn't work
+  gapi.client.setToken(state.value.accessToken); //this didn't work
   // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
   // if (gapi.client.getToken() === null) {
   //   // Prompt the user to select a Google Account and ask for consent to share their data
@@ -42,8 +42,8 @@ Promise.all(promises).then(async () => {
   // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
   // console.log("gapi client initialized.");
   // getTestData();
-  writeTest();
-  // getAllListItems();
+  // writeTest();
+  getAllListItems();
 
 });
 
@@ -59,7 +59,7 @@ async function getTokenClient() {
 async function gotToken(tokenResponse) {
   console.log("in gotToken");
   if (tokenResponse && tokenResponse.access_token) {
-    state.value.accessToken = tokenResponse.access_token; 
+    state.value.accessToken = tokenResponse.access_token;
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
   }
@@ -90,7 +90,7 @@ async function gapiLoadAuth2() {
   });
 }
 
-// this doesn't work
+// this works for reading spreadsheet data
 async function initializeGapiClient() {
   await gapi.client.init({
     apiKey: state.value.APIkey,
