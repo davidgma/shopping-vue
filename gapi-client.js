@@ -29,7 +29,7 @@ Promise.all(promises).then(async () => {
   // console.log("calling initializeGapiAuth2");
   // await initializeGapiAuth2();
   // console.log("finished calling initializeGapiAuth2");
-  // gapi.client.setToken(state.value.accessToken); //this didn't work as it only sets the authentication token not the access token
+  gapi.client.setToken({access_token: state.value.accessToken}); //this didn't work as it only sets the authentication token not the access token
   // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
   // if (gapi.client.getToken() === null) {
   //   // Prompt the user to select a Google Account and ask for consent to share their data
