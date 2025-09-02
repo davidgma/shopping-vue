@@ -5,7 +5,8 @@ import { state } from './addresses-view.js';
 let credentialResponse = null; // credential response
 
 function handleCredentialResponse(response) {
-    // setupResults.value.push("In handleCredentialResponse");
+    console.log("In handleCredentialResponse");
+    setupResults.value.push("In handleCredentialResponse");
 
     credentialResponse = response.credential;
     state.value.token = response.credential;
@@ -14,37 +15,38 @@ function handleCredentialResponse(response) {
     const responsePayload = decodeJwtResponse(response.credential);
     setupResults.value.push("Decoded JWT ID token: ");
     setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
-
+    accountInitLoaded();
 }
 window.onload = function () {
+    console.log("prompting for a token");
     promptForToken();
     // Check to see whether there is already a JWT ID token
-    // if (state.value.token === "") {
-    //     setupResults.value.push("No JWT token is available - fill in the above details then click 'Sign in' to get one.");
-    //     // promptForToken();
+    if (state.value.token === "") {
+        setupResults.value.push("No JWT token is available - fill in the above details then click 'Sign in' to get one.");
+        // promptForToken();
 
-    // }
-    // else {
-    //     // There is already a JWT token
-    //     const responsePayload = decodeJwtResponse(state.value.token);
-    //     // console.log(responsePayload);
-    //     setupResults.value.push("A token is already available.");
-    //     setupResults.value.push("Decoded JWT ID token: ");
-    //     setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
+    }
+    else {
+        // There is already a JWT token
+        const responsePayload = decodeJwtResponse(state.value.token);
+        // console.log(responsePayload);
+        setupResults.value.push("A token is already available.");
+        setupResults.value.push("Decoded JWT ID token: ");
+        setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
 
-    //     // Check it hasn't expired
-    //     const expiry = new Date(responsePayload.exp * 1000);
-    //     if (expiry < new Date()) {
-    //         setupResults.value.push("Token has expired, request another");
-    //         state.value.token = "";
-    //         // promptForToken();
-    //     }
-    //     else { // Theres's a valid token - try getting the test cells
+        // Check it hasn't expired
+        const expiry = new Date(responsePayload.exp * 1000);
+        if (expiry < new Date()) {
+            setupResults.value.push("Token has expired, request another");
+            state.value.token = "";
+            // promptForToken();
+        }
+        else { // Theres's a valid token - try getting the test cells
 
 
-    //     }
+        }
 
-    // }
+    }
 
 }
 
@@ -75,6 +77,7 @@ function formatJWT(token) {
 
 // Show the google sign in button 
 export function promptForToken() {
+    console.log("About to call google.accounts.id.initialize");
     google.accounts.id.initialize({
         auto_select: true,
         client_id: state.value.clientId,
