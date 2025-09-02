@@ -1,7 +1,7 @@
 import { state } from './addresses-view.js';
 import { setupResults } from './setup-view.js';
 
-let tokenClient;
+
 // Discovery doc URL for APIs used by the quickstart
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
@@ -12,21 +12,24 @@ Promise.all(promises).then(async () => {
 
   console.log("calling getTokenClient");
   await getTokenClient();
+  console.log("finished calling getTokenClient");
+  console.log("tokenClient: ");
+  console.log(tokenClient);
+  console.log("requesting access token");
+  //tokenClient.requestAccessToken(); // fails to open popup window
   console.log("calling gapiLoadClient");
   await gapiLoadClient();
   console.log("calling gapiLoadAuth2");
   await gapiLoadAuth2();
   console.log("finished calling gapiLoadAuth2");
-  console.log("calling initTokenClient");
-  await initTokenClient();
-  console.log("finished calling initTokenClient");
+
   // console.log("calling initializeGapiClient");
   // await await initializeGapiClient();
   // console.log("finished calling initializeGapiClient");
   // console.log("calling initializeGapiAuth2");
   // await initializeGapiAuth2();
   // console.log("finished calling initializeGapiAuth2");
-  //gapi.client.setToken(state.value.token);
+  // gapi.client.setToken(state.value.accessToken); this didn't work
   // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
   // if (gapi.client.getToken() === null) {
   //   // Prompt the user to select a Google Account and ask for consent to share their data
@@ -53,8 +56,13 @@ async function getTokenClient() {
   });
 }
 
-async function gotToken() {
+async function gotToken(tokenResponse) {
   console.log("in gotToken");
+  if (tokenResponse && tokenResponse.access_token) {
+    state.value.accessToken = tokenResponse.access_token; 
+    gapi.client.setApiKey(state.value.APIkey);
+    gapi.client.load(DISCOVERY_DOC);
+  }
 
 }
 
@@ -97,18 +105,20 @@ async function initializeGapiAuth2() {
   });
 }
 
-async function initTokenClient() {
-  return new Promise((resolve, revoke) => {
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: state.value.clientId,
-      scope: SCOPES,
-      callback: (response) => {
-        resolve(response);
-      },
-    });
+// async function initTokenClient() {
+//   return new Promise((resolve, revoke) => {
+//     tokenClient = google.accounts.oauth2.initTokenClient({
+//       client_id: state.value.clientId,
+//       scope: SCOPES,
+//       callback: (response) => {
+//         console.log("initTokenClient response: ");
+//         console.log(response);
+//         resolve(response);
+//       },
+//     });
 
-  });
-} 
+//   });
+// } 
 
 async function getTestData() {
   let response;

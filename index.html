@@ -20,6 +20,8 @@
 <body>
   <h1>Shopping List</h1>
   <div id="google"></div>
+  <button onclick="tokenClient.requestAccessToken();">Authorize me</button>
+  <button onclick="writeToSheet();">Write to sheet</button>
   <div id="vueapp1">
     <addresses-view class="addresses" />
   </div>

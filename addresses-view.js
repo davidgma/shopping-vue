@@ -8,6 +8,7 @@ const theDefault = {
   APIkey: "api key",
   range: "List!A2:C",
   token: "",
+  accessToken: "",
   version: 1
 }
 
