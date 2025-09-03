@@ -69,3 +69,90 @@ const AddressesView = {
 // google.accounts.id.prompt((notification) => {
     //     setupResults.value = [];
     // }); // also display the One Tap dialog
+
+    // console.log("requesting access token");
+  //tokenClient.requestAccessToken(); // fails to open popup window
+
+  // <button onclick="tokenClient.requestAccessToken();">Authorize me</button>
+
+  console.log("calling gapiLoadAuth2");
+  await gapiLoadAuth2();
+  console.log("finished calling gapiLoadAuth2");
+
+  async function gapiLoadAuth2() {
+    return new Promise((resolve) => {
+      gapi.load("auth2", () => {
+        resolve();
+      },
+        (error) => {
+          console.log("Error loading client: "
+            + JSON.stringify(error));
+        });
+    });
+  }
+
+  // this doesn't work either
+async function initializeGapiAuth2() {
+  await gapi.auth2.init({
+    client_id: state.value.clientId
+  });
+}
+
+// async function initTokenClient() {
+//   return new Promise((resolve, revoke) => {
+//     tokenClient = google.accounts.oauth2.initTokenClient({
+//       client_id: state.value.clientId,
+//       scope: SCOPES,
+//       callback: (response) => {
+//         console.log("initTokenClient response: ");
+//         console.log(response);
+//         resolve(response);
+//       },
+//     });
+
+//   });
+// } 
+
+async function getTestData() {
+  let response;
+  try {
+    response = await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: state.value.spreadsheetId,
+      range: state.value.range,
+    });
+  } catch (err) {
+    document.getElementById('content').innerText = err.message;
+    return;
+  }
+  const range = response.result;
+  if (!range || !range.values || range.values.length == 0) {
+    console.log('No values found in spreadsheet.');
+    return;
+  }
+  // Flatten to string to display
+  const output = range.values.reduce(
+    (str, row) => `${str}${row[0]}, ${row[4]}\n`);
+  console.log(output);
+}
+
+ // console.log("calling initializeGapiAuth2");
+  // await initializeGapiAuth2();
+  // console.log("finished calling initializeGapiAuth2");
+
+  <button onclick="tokenClient.requestAccessToken();">Authorize me</button>
+
+
+
+  // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
+  // if (gapi.client.getToken() === null) {
+  //   // Prompt the user to select a Google Account and ask for consent to share their data
+  //   // when establishing a new session.
+  //   tokenClient.requestAccessToken({ prompt: 'consent' });
+  // } else {
+  //   // Skip display of account chooser and consent dialog for an existing session.
+  //   tokenClient.requestAccessToken({ prompt: '' });
+  // }
+  // console.log("gapi.client.getToken() === null:" + (gapi.client.getToken() === null));
+  // console.log("gapi client initialized.");
+  // getTestData();
+  // writeTest();

@@ -21,7 +21,7 @@
 <body>
   <h1>Shopping List</h1>
   <div id="google"></div>
-  <button onclick="tokenClient.requestAccessToken();">Authorize me</button>
+  
   
   <div id="vueapp1">
     <addresses-view class="addresses" />
@@ -32,8 +32,8 @@
   <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
   <script type="module" src="addresses-view.js"></script>
   <script type="module" src="vue-app1.js"></script>
+  <script type="module" src="sheets.js"></script>
   <script type="module" src="auth.js"></script>
-  <script type="module" src="setup-loading.js"></script>
 
 </body>
 

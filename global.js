@@ -1,6 +1,8 @@
 // for the things that need to be global because otherwise
 // the load can't see them.
 
+let tokenClient;
+
 const promises = [];
 let gisPromise;
 let gapiPromise;

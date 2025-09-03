@@ -1,6 +1,5 @@
 // import { ref } from 'vue';
 import { useStorage } from 'vueuse';
-import { promptForToken } from './auth.js';
 
 const theDefault = {
   spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
@@ -30,6 +29,7 @@ export const AddressesView = {
 	</div>
 
 </form>
+
 
 <button @click="writeToSheet();">Write to sheet</button>
 
