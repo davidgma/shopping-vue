@@ -33,8 +33,8 @@ Promise.all(promises).then(async () => {
 
   gapi.client.setToken({ access_token: state.value.accessToken });
   if (! await isAccessTokenValid()) {
-    tokenClient.requestAccessToken({ prompt: '' });
-    // tokenClient.requestAccessToken();
+    // tokenClient.requestAccessToken({ prompt: '' });
+    tokenClient.requestAccessToken();
   }
   // tokenClient.requestAccessToken({ prompt: '' });
 

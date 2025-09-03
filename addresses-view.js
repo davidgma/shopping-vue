@@ -30,7 +30,7 @@ export const AddressesView = {
 
 </form>
 
-
+<button onclick="tokenClient.requestAccessToken();">Authorize me</button>
 <button @click="writeToSheet();">Write to sheet</button>
 
 <setup-view />
