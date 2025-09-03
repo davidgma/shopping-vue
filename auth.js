@@ -104,9 +104,7 @@ function handleCredentialResponse(response) {
   tokenClient.requestAccessToken();
 }
 window.onload = function () {
-  console.log("prompting for a token");
   initGoogleSignIn();
-
 }
 
 function decodeJwtResponse(token) {
