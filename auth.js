@@ -15,8 +15,6 @@ Promise.all(promises).then(async () => {
   console.log("gis and gapi loaded");
 
   await getTokenClient();
-  // console.log("tokenClient: ");
-  // console.log(tokenClient);
 
   console.log("calling gapiLoadClient");
   await gapiLoadClient();
@@ -91,16 +89,16 @@ async function initializeGapiClient() {
 let credentialResponse = null; // credential response
 
 function handleCredentialResponse(response) {
-  console.log("In handleCredentialResponse");
-  setupResults.value.push("In handleCredentialResponse");
+  // console.log("In handleCredentialResponse");
+  // setupResults.value.push("In handleCredentialResponse");
 
   credentialResponse = response.credential;
   state.value.token = response.credential;
   // setupResults.value.push("Encoded JWT ID token: " + response.credential);
 
   const responsePayload = decodeJwtResponse(response.credential);
-  setupResults.value.push("Decoded JWT ID token: ");
-  setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
+  // setupResults.value.push("Decoded JWT ID token: ");
+  // setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
   tokenClient.requestAccessToken();
 }
 window.onload = function () {
