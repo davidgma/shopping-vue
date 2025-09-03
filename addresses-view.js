@@ -3,10 +3,10 @@ import { useStorage } from 'vueuse';
 import { promptForToken } from './setup-loading.js';
 
 const theDefault = {
-  spreadsheetId: "spreadsheet id",
-  clientId: "client id",
-  APIkey: "api key",
-  range: "List!A2:C",
+  spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
+  clientId: "285838277656-epg5b87qpis468k0r6crifeiq8m68djf.apps.googleusercontent.com",
+  APIkey: "AIzaSyBYAKEDgQCyvtwbUk0Gws7obBycBCva99E",
+  range: "list",
   token: "",
   accessToken: "",
   version: 1
@@ -20,19 +20,8 @@ export const AddressesView = {
  
   <form>
 	<div class="form-group">
-	
   <label>Spreadsheet ID (the long text between the /d/ and the /edit/ in the address)</label>
 		<input v-model="state.spreadsheetId" type="text" :placeholder="spreadsheetId" class="form-control" id="spreadsheetId"  name="spreadsheetId">
-	</div>
-
-  <div class="form-group">
-		<label>Client Id</label>
-		<input v-model="state.clientId" type="text" :placeholder="clientId" class="form-control" id="clientId" name="clientId">
-	</div>
-
-  <div class="form-group">
-		<label>API key</label>
-		<input v-model="state.APIkey" type="text" :placeholder="APIkey" class="form-control" id="APIkey" name="APIkey">
 	</div>
 
 	<div class="form-group">
@@ -48,23 +37,8 @@ export const AddressesView = {
 
   setup() {
 
-    //<button @click="refreshToken" type="button">Refresh token</button>
-    // console.log("Under useStorage:");
-    // console.log(localStorage.getItem('local'));
-    // console.log("spreadsheetId: " + state.value.spreadsheetId);
-    // console.log("clientId: " + state.value.clientId);
-    // console.log("APIkey: " + state.value.APIkey);
-    // console.log("range:" + state.value.range);
-    // console.log("token:" + state.value.token);
-    // console.log("version:" + state.value.version);
-
-    function refreshToken() {
-      console.log("refreshing token");
-      promptForToken();
-    }
-
     return {
-      state, refreshToken
+      state
 
     };
   }
