@@ -105,7 +105,7 @@ function handleCredentialResponse(response) {
 }
 window.onload = function () {
   console.log("prompting for a token");
-  promptForToken();
+  initGoogleSignIn();
 
 }
 
@@ -134,8 +134,8 @@ function formatJWT(token) {
   return a;
 }
 
-// Show the google sign in button 
-export function promptForToken() {
+// Initialise the google sign in button 
+export function initGoogleSignIn() {
   console.log("About to call google.accounts.id.initialize");
   google.accounts.id.initialize({
     auto_select: true,
