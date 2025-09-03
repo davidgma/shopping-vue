@@ -1,6 +1,6 @@
 // import { ref } from 'vue';
 import { useStorage } from 'vueuse';
-import { promptForToken } from './setup-loading.js';
+import { promptForToken } from './auth.js';
 
 const theDefault = {
   spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
@@ -31,14 +31,41 @@ export const AddressesView = {
 
 </form>
 
+<button @click="writeToSheet();">Write to sheet</button>
 
 <setup-view />
   `,
 
   setup() {
 
+    async function writeToSheet() {
+      // tokenClient.requestAccessToken();
+      console.log("in writeTest");
+      console.log("gapi.client:");
+      console.log(gapi.client);
+      console.log("gapi.auth2:");
+      console.log(gapi.auth2);
+      console.log("gapi.client.sheets.spreadsheets.values:");
+      console.log(gapi.client.sheets.spreadsheets.values);
+      let response;
+      try {
+        response = await gapi.client.sheets.spreadsheets.values.update({
+          spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
+          range: "notes!C2:C2",
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: [[7]] }
+        });
+      } catch (err) {
+        console.log("err:");
+        console.log(err);
+        console.log("Error updating spreadsheet data: " + err);
+        console.log(err);
+        return;
+      }
+    }
+
     return {
-      state
+      state, writeToSheet
 
     };
   }

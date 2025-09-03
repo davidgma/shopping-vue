@@ -57,3 +57,15 @@ const AddressesView = {
     }
   
   }
+
+  // promises.push(new Promise((resolve, reject) => {
+//     accountInitPromise = {resolve, reject}
+// }));
+// function accountInitLoaded() {
+//     console.log("google.accounts.id.initialize loaded and called back");
+//     accountInitPromise.resolve();
+// }
+
+// google.accounts.id.prompt((notification) => {
+    //     setupResults.value = [];
+    // }); // also display the One Tap dialog
