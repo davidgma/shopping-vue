@@ -149,7 +149,7 @@ export async function incrementTest() {
     }
     else {
         console.log("currentValue is a number: " + currentValue)
-        valueToWrite = currentValue++;
+        valueToWrite = currentValue + 1;
     }
 
     console.log("in writeToSheet. Writing value: " + valueToWrite);
