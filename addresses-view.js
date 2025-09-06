@@ -28,7 +28,7 @@ export const AddressesView = {
 	</div>
 
 	<div class="form-group">
-		<label>Range for testing e.g. Sheet1!A1:C</label>
+		<label>Range for testing e.g. Sheet1!A1:C or range name e.g. list</label>
 		<input v-model="state.range" type="text" :placeholder="range" class="form-control" id="range" name="range">
 	</div>
 
@@ -38,7 +38,7 @@ export const AddressesView = {
 <button class="addresses-button"  @click="showReadWriteStatus();">Show status</button>
 <button class="addresses-button"  @click="setUpReadAccess();">Set Up Read Access</button>
 <button class="addresses-button"  @click="setUpWriteAccess();">Set up write access</button>
-<button class="addresses-button"  @click="incrementTest();">Write to sheet</button>
+<button class="addresses-button"  @click="incrementTest();">Increment test</button>
 <button class="addresses-button"  @click="getItems();">Get the items</button>
 <button class="addresses-button" @click="tokenClient.requestAccessToken();">Authorize me (make auto or remove?)</button>
 </article>
@@ -75,9 +75,9 @@ export const AddressesView = {
         await setUpReadAccess();
         console.log("finished setting up read access.");
       }
-      console.log("calling getAllListItems");
+      // console.log("calling getAllListItems");
       await getAllListItems();
-      console.log("List items finished being retrieved.");
+      // console.log("List items finished being retrieved.");
       setupResults.value.push("List items finished being retrieved.");
     }
 

@@ -135,24 +135,24 @@ export async function incrementTest() {
 
     let valueToWrite;
     const returnValue = await getValueInCell("increment");
-    console.log("returned from getValueInCell: " + returnValue);
+    // console.log("returned from getValueInCell: " + returnValue);
     let currentValue = Number(returnValue);
-    console.log("current value: " + currentValue);
+    // console.log("current value: " + currentValue);
     if (currentValue.length === 0) {
-        console.log("setting valueToWrite to 0");
+        // console.log("setting valueToWrite to 0");
         valueToWrite = 0;
     }
     else if (isNaN(currentValue)) {
-        console.log("currentValue isn't a number");
-        console.log("setting valueToWrite to 1");
+        // console.log("currentValue isn't a number");
+        // console.log("setting valueToWrite to 1");
         valueToWrite = 1;
     }
     else {
-        console.log("currentValue is a number: " + currentValue)
+        // console.log("currentValue is a number: " + currentValue)
         valueToWrite = currentValue + 1;
     }
 
-    console.log("in writeToSheet. Writing value: " + valueToWrite);
+    // console.log("in writeToSheet. Writing value: " + valueToWrite);
     // console.log("gapi.client:");
     // console.log(gapi.client);
     // console.log("gapi.auth2:");

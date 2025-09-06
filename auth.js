@@ -123,9 +123,9 @@ export async function setUpWrite() {
       await getTokenClient();
 
       // First try re-using an existing access token in case it's still valid
-      console.log("Trying to reuse existing token...");
-      console.log("state.value.accessToken:");
-      console.log(state.value.accessToken);
+      // console.log("Trying to reuse existing token...");
+      // console.log("state.value.accessToken:");
+      // console.log(state.value.accessToken);
       if (state.value.accessToken !== null) {
         console.log("Reusing existing access token...");
         gapi.client.setToken({ access_token: state.value.accessToken });
