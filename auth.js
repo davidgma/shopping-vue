@@ -1,12 +1,12 @@
 import { state } from './addresses-view.js';
-import { setupResults } from './setup-view.js';
-import { isAccessTokenValid, getAllListItems } from './sheets.js';
-
-
+import { canRead, canWrite } from './sheets.js';
 
 // Discovery doc URL for APIs used by the quickstart
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+
+// This is needed to wait for the access token callback
+let accessPromise;
 
 // *******************
 // Run when the gapi and gis scripts have loaded
@@ -14,96 +14,12 @@ const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 Promise.all(promises).then(async () => {
   console.log("gis and gapi loaded");
 
-  await getTokenClient();
-
-  console.log("calling gapiLoadClient");
-  await gapiLoadClient();
-
-  // Initialises the gapi client with the api key. This works for reading but not writing.
-  console.log("calling initializeGapiClient");
-  await initializeGapiClient();
-  console.log("finished calling initializeGapiClient");
-
-  console.log("access_token:");
-  console.log(state.value.accessToken);
-  console.log("gapi.client.getToken()");
-  console.log(gapi.client.getToken());
-
-  gapi.client.setToken({ access_token: state.value.accessToken });
-  if (! await isAccessTokenValid()) {
-    tokenClient.requestAccessToken({ prompt: '' });
-    // tokenClient.requestAccessToken();
-  }
-  // tokenClient.requestAccessToken({ prompt: '' });
-
-  getAllListItems();
-
+  // This is always needed
+  setUpRead();
 });
 // *******************
 
-
-async function getTokenClient() {
-  console.log("In getTokenClient");
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: state.value.clientId,
-    scope: SCOPES,
-    callback: gotToken // defined later
-  });
-}
-
-async function gotToken(tokenResponse) {
-  console.log("in gotToken");
-  if (tokenResponse && tokenResponse.access_token) {
-    state.value.accessToken = tokenResponse.access_token;
-    gapi.client.setApiKey(state.value.APIkey);
-    gapi.client.load(DISCOVERY_DOC);
-  }
-
-}
-
-async function gapiLoadClient() {
-  return new Promise((resolve) => {
-    gapi.load("client", () => {
-      resolve();
-    },
-      (error) => {
-        console.log("Error loading client: "
-          + JSON.stringify(error));
-      });
-  });
-}
-
-
-// this works for reading spreadsheet data
-async function initializeGapiClient() {
-  await gapi.client.init({
-    apiKey: state.value.APIkey,
-    discoveryDocs: [DISCOVERY_DOC]
-  });
-}
-
-
-
-
-
 let credentialResponse = null; // credential response
-
-function handleCredentialResponse(response) {
-  // console.log("In handleCredentialResponse");
-  // setupResults.value.push("In handleCredentialResponse");
-
-  credentialResponse = response.credential;
-  state.value.token = response.credential;
-  // setupResults.value.push("Encoded JWT ID token: " + response.credential);
-
-  const responsePayload = decodeJwtResponse(response.credential);
-  // setupResults.value.push("Decoded JWT ID token: ");
-  // setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
-  tokenClient.requestAccessToken();
-}
-window.onload = function () {
-  initGoogleSignIn();
-}
 
 function decodeJwtResponse(token) {
   let base64Url = token.split('.')[1];
@@ -130,9 +46,123 @@ function formatJWT(token) {
   return a;
 }
 
+// **************************
+// Readonly access via API key
+// *****************************
+
+async function gapiLoadClient() {
+  return new Promise((resolve) => {
+    gapi.load("client", () => {
+      resolve();
+    },
+      (error) => {
+        console.log("Error loading client: "
+          + JSON.stringify(error));
+      });
+  });
+}
+
+// this works for reading spreadsheet data
+async function initializeGapiClient() {
+  await gapi.client.init({
+    apiKey: state.value.APIkey,
+    discoveryDocs: [DISCOVERY_DOC]
+  });
+}
+
+// Set up read access
+export async function setUpRead() {
+  await Promise.all(promises).then(async () => {
+    if (! await canRead()) {
+      // This sets up the gapi client for readonly access using the API key
+      console.log("calling gapiLoadClient");
+      await gapiLoadClient();
+      console.log("calling initializeGapiClient");
+      await initializeGapiClient();
+      console.log("finished calling initializeGapiClient");
+      // console.log("gapi.client.getToken()");
+      // console.log(gapi.client.getToken());
+    }
+    else {
+      console.log("Already have read access.");
+    }
+  });
+}
+
+
+// **************************
+// Readwrite access via client id and API key
+// *****************************
+
+// This sets up, but doesn't call, readwrite access
+async function getTokenClient() {
+  console.log("In getTokenClient");
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: state.value.clientId,
+    scope: SCOPES,
+    callback: gotToken // defined later
+  });
+}
+
+async function gotToken(tokenResponse) {
+  console.log("in gotToken");
+  if (tokenResponse && tokenResponse.access_token) {
+    state.value.accessToken = tokenResponse.access_token;
+    gapi.client.setApiKey(state.value.APIkey);
+    gapi.client.load(DISCOVERY_DOC);
+    accessPromise.resolve();
+  }
+}
+
+// Set up write access
+export async function setUpWrite() {
+  await Promise.all(promises).then(async () => {
+    if (! await canWrite()) {
+
+      // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. 
+      await getTokenClient();
+
+      // First try re-using an existing access token in case it's still valid
+      console.log("Trying to reuse existing token...");
+      console.log("state.value.accessToken:");
+      console.log(state.value.accessToken);
+      if (state.value.accessToken !== null) {
+        console.log("Reusing existing access token...");
+        gapi.client.setToken({ access_token: state.value.accessToken });
+      }
+
+      if (! await canWrite()) {
+        return new Promise(async (resolve, reject) => {
+          tokenClient.requestAccessToken({ prompt: '' });
+          // tokenClient.requestAccessToken();
+          // This doesn't return anything, but calls the callback defined in google.accounts.oauth2.initTokenClient() call
+          tokenClient.requestAccessToken();
+          // Wait for the resolve from the callback from the authorisation routine
+          accessPromise = { resolve, reject }
+        });
+      }
+
+
+
+    }
+    else {
+      console.log("Already have write access.");
+    }
+  });
+}
+
+
+// **************************
+// Google sign-in button. This could be used instead of authorise.
+// *****************************
+
+window.onload = function () {
+  initGoogleSignIn();
+}
+
 // Initialise the google sign in button 
-export function initGoogleSignIn() {
-  console.log("About to call google.accounts.id.initialize");
+function initGoogleSignIn() {
+  console.log("About to call google.accounts.id.initialize to initialize the Google Sign In button.");
   google.accounts.id.initialize({
     auto_select: true,
     client_id: state.value.clientId,
@@ -144,6 +174,18 @@ export function initGoogleSignIn() {
     document.getElementById("google"),
     { theme: "outline", size: "large" }  // customization attributes
   );
+}
 
+function handleCredentialResponse(response) {
+  // console.log("In handleCredentialResponse");
+  // setupResults.value.push("In handleCredentialResponse");
 
+  credentialResponse = response.credential;
+  state.value.authenticationToken = response.credential;
+  // setupResults.value.push("Encoded JWT ID token: " + response.credential);
+
+  const responsePayload = decodeJwtResponse(response.credential);
+  // setupResults.value.push("Decoded JWT ID token: ");
+  // setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
+  tokenClient.requestAccessToken();
 }

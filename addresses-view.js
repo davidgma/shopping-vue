@@ -1,12 +1,16 @@
-// import { ref } from 'vue';
+import { ref } from 'vue';
 import { useStorage } from 'vueuse';
+import { setupResults } from './setup-view.js';
+import { canRead, canWrite, getAllListItems, writeToSheetTest } from './sheets.js';
+import { setUpRead, setUpWrite } from './auth.js';
+
 
 const theDefault = {
   spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
   clientId: "285838277656-epg5b87qpis468k0r6crifeiq8m68djf.apps.googleusercontent.com",
   APIkey: "AIzaSyBYAKEDgQCyvtwbUk0Gws7obBycBCva99E",
   range: "list",
-  token: "",
+  authenticationToken: "",
   accessToken: "",
   version: 1
 }
@@ -30,44 +34,58 @@ export const AddressesView = {
 
 </form>
 
-<button onclick="tokenClient.requestAccessToken();">Authorize me</button>
-<button @click="writeToSheet();">Write to sheet</button>
+<article class="container">
+<button class="addresses-button"  @click="showReadWriteStatus();">Show status</button>
+<button class="addresses-button"  @click="setUpReadAccess();">Set Up Read Access</button>
+<button class="addresses-button"  @click="setUpWriteAccess();">Set up write access</button>
+<button class="addresses-button"  @click="writeToSheetTest();">Write to sheet</button>
+<button class="addresses-button"  @click="getItems();">Get the items</button>
+<button class="addresses-button" @click="tokenClient.requestAccessToken();">Authorize me (make auto or remove?)</button>
+</article>
 
 <setup-view />
   `,
 
   setup() {
 
-    async function writeToSheet() {
-      // tokenClient.requestAccessToken();
-      console.log("in writeTest");
-      console.log("gapi.client:");
-      console.log(gapi.client);
-      console.log("gapi.auth2:");
-      console.log(gapi.auth2);
-      console.log("gapi.client.sheets.spreadsheets.values:");
-      console.log(gapi.client.sheets.spreadsheets.values);
-      let response;
-      try {
-        response = await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
-          range: "notes!C2:C2",
-          valueInputOption: 'USER_ENTERED',
-          resource: { values: [[7]] }
-        });
-      } catch (err) {
-        console.log("err:");
-        console.log(err);
-        console.log("Error updating spreadsheet data: " + err);
-        console.log(err);
-        return;
+
+    async function showReadWriteStatus() {
+      setupResults.value.push("ReadWrite status:");
+      const canReadResult = await canRead();
+      setupResults.value.push("Can read: " + canReadResult);
+
+      const canWriteResult = await canWrite();
+      setupResults.value.push("Can write: " + canWriteResult);
+
+
+    }
+
+    async function setUpReadAccess() {
+      await setUpRead();
+      setupResults.value.push("Read access finished being set up");
+    }
+
+    async function setUpWriteAccess() {
+      await setUpWrite();
+      setupResults.value.push("Write access finished being set up");
+    }
+
+    async function getItems() {
+      if (! await canRead()) {
+        await setUpReadAccess();
+        console.log("finished setting up read access.");
       }
+      console.log("calling getAllListItems");
+      await getAllListItems();
+      console.log("List items finished being retrieved.");
+      setupResults.value.push("List items finished being retrieved.");
     }
 
     return {
-      state, writeToSheet
+      state, showReadWriteStatus, setUpReadAccess, setUpWriteAccess, getItems, writeToSheetTest
 
     };
   }
 
 }
+

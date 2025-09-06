@@ -1,16 +1,34 @@
 import { state } from './addresses-view.js';
 import { setupResults } from './setup-view.js';
+import { setUpRead, setUpWrite } from './auth.js';
 
-// If the access token is valid, a read will be possible
-export async function isAccessTokenValid() {
+
+// Whether the spreadsheet is readable
+export async function canRead() {
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.value.spreadsheetId,
-            range: "A1",
+            range: "readwrite",
         });
     } catch (err) {
-        setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
+        // setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
+        return false;
+    }
+    return true;
+}
+
+// Whether the spreadsheet is writeable
+export async function canWrite() {
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: state.value.spreadsheetId,
+            range: "readwrite",
+            valueInputOption: 'USER_ENTERED',
+            resource: { values: [["write test"]] }
+        });
+    } catch (err) {
         return false;
     }
     return true;
@@ -19,6 +37,7 @@ export async function isAccessTokenValid() {
 
 // Get all the items from the shopping list
 export async function getAllListItems() {
+    await setUpRead();
     console.log("in getAllListItems");
     let response;
     try {
@@ -87,3 +106,54 @@ class ListItem {
         return JSON.stringify(this);
     }
 }
+
+async function getValueInReadWriteCell() {
+    await setUpRead();
+    console.log("in getValueInReadWriteCell");
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.value.spreadsheetId,
+            range: "readwrite",
+        });
+    } catch (err) {
+        setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
+        return;
+    }
+    const range = response.result;
+
+    console.log("values returned: " + range.values[0][0]);
+    return range.values[0][0];
+}
+
+export async function writeToSheetTest() {
+    await setUpWrite();
+
+    const currentValue = await getValueInReadWriteCell();
+    console.log("current value: " + currentValue);
+    
+    console.log("in writeToSheet. Writing value: " + valueToWrite);
+    // console.log("gapi.client:");
+    // console.log(gapi.client);
+    // console.log("gapi.auth2:");
+    // console.log(gapi.auth2);
+    // console.log("gapi.client.sheets.spreadsheets.values:");
+    // console.log(gapi.client.sheets.spreadsheets.values);
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
+            range: "notes!C2:C2",
+            valueInputOption: 'USER_ENTERED',
+            // resource: { values: [[value]] }
+            resource: { values: [[3]] }
+        });
+    } catch (err) {
+        console.log("err:");
+        console.log(err);
+        console.log("Error updating spreadsheet data: " + err);
+        console.log(err);
+        return;
+    }
+}
+

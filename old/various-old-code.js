@@ -42,7 +42,7 @@ const AddressesView = {
       // console.log("clientId: " + state.value.clientId);
       // console.log("APIkey: " + state.value.APIkey);
       // console.log("range:" + state.value.range);
-      // console.log("token:" + state.value.token);
+      // console.log("authenticationToken:" + state.value.authenticationToken);
       // console.log("version:" + state.value.version);
   
       function refreshToken() {
@@ -158,14 +158,14 @@ async function getTestData() {
   // writeTest();
 
   // Check to see whether there is already a JWT ID token
-  if (state.value.token === "") {
+  if (state.value.authenticationToken === "") {
     setupResults.value.push("No JWT token is available - fill in the above details then click 'Sign in' to get one.");
     // promptForToken();
 
   }
   else {
     // There is already a JWT token
-    const responsePayload = decodeJwtResponse(state.value.token);
+    const responsePayload = decodeJwtResponse(state.value.authenticationToken);
     // console.log(responsePayload);
     setupResults.value.push("A token is already available.");
     setupResults.value.push("Decoded JWT ID token: ");
@@ -175,7 +175,7 @@ async function getTestData() {
     const expiry = new Date(responsePayload.exp * 1000);
     if (expiry < new Date()) {
       setupResults.value.push("Token has expired, request another");
-      state.value.token = "";
+      state.value.authenticationToken = "";
       // promptForToken();
     }
     else { // Theres's a valid token - try getting the test cells
@@ -184,3 +184,18 @@ async function getTestData() {
     }
 
   }
+
+  // If the access token is valid, a read will be possible
+export async function isAccessTokenValid() {
+  let response;
+  try {
+      response = await gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: state.value.spreadsheetId,
+          range: "A1",
+      });
+  } catch (err) {
+      setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
+      return false;
+  }
+  return true;
+}
