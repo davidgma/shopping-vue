@@ -107,40 +107,49 @@ class ListItem {
     }
 }
 
-async function getValueInReadWriteCell() {
+async function getValueInCell(rangeName) {
     await setUpRead();
-    console.log("in getValueInReadWriteCell");
+    console.log("in getValueInCell");
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.value.spreadsheetId,
-            range: "readwrite",
+            range: rangeName,
         });
     } catch (err) {
         setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
         return;
     }
     const range = response.result;
+    if (!range || !range.values || range.values.length == 0) {
+        console.log("empty value returned");
+        return "";
+    }
 
     console.log("values returned: " + range.values[0][0]);
     return range.values[0][0];
 }
 
-export async function writeToSheetTest() {
+export async function incrementTest() {
     await setUpWrite();
 
     let valueToWrite;
-    const returnValue = await getValueInReadWriteCell();
-    console.log("returned from getValueInReadWriteCell: " + returnValue);
+    const returnValue = await getValueInCell("increment");
+    console.log("returned from getValueInCell: " + returnValue);
     let currentValue = Number(returnValue);
     console.log("current value: " + currentValue);
-    if (isNaN(currentValue)) {
+    if (currentValue.length === 0) {
+        console.log("setting valueToWrite to 0");
+        valueToWrite = 0;
+    }
+    else if (isNaN(currentValue)) {
         console.log("currentValue isn't a number");
+        console.log("setting valueToWrite to 1");
         valueToWrite = 1;
     }
     else {
-        console.log("currentValue is a number")
-        valueToWrite++;
+        console.log("currentValue is a number: " + currentValue)
+        valueToWrite = currentValue++;
     }
 
     console.log("in writeToSheet. Writing value: " + valueToWrite);
@@ -153,8 +162,8 @@ export async function writeToSheetTest() {
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
-            range: "readwrite",
+            spreadsheetId: state.value.spreadsheetId,
+            range: "increment",
             valueInputOption: 'USER_ENTERED',
             // resource: { values: [[value]] }
             resource: { values: [[valueToWrite]] }

@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { useStorage } from 'vueuse';
 import { setupResults } from './setup-view.js';
-import { canRead, canWrite, getAllListItems, writeToSheetTest } from './sheets.js';
+import { canRead, canWrite, getAllListItems, incrementTest } from './sheets.js';
 import { setUpRead, setUpWrite } from './auth.js';
 
 
@@ -38,7 +38,7 @@ export const AddressesView = {
 <button class="addresses-button"  @click="showReadWriteStatus();">Show status</button>
 <button class="addresses-button"  @click="setUpReadAccess();">Set Up Read Access</button>
 <button class="addresses-button"  @click="setUpWriteAccess();">Set up write access</button>
-<button class="addresses-button"  @click="writeToSheetTest();">Write to sheet</button>
+<button class="addresses-button"  @click="incrementTest();">Write to sheet</button>
 <button class="addresses-button"  @click="getItems();">Get the items</button>
 <button class="addresses-button" @click="tokenClient.requestAccessToken();">Authorize me (make auto or remove?)</button>
 </article>
@@ -82,7 +82,7 @@ export const AddressesView = {
     }
 
     return {
-      state, showReadWriteStatus, setUpReadAccess, setUpWriteAccess, getItems, writeToSheetTest
+      state, showReadWriteStatus, setUpReadAccess, setUpWriteAccess, getItems, incrementTest
 
     };
   }
