@@ -129,9 +129,20 @@ async function getValueInReadWriteCell() {
 export async function writeToSheetTest() {
     await setUpWrite();
 
-    const currentValue = await getValueInReadWriteCell();
+    let valueToWrite;
+    const returnValue = await getValueInReadWriteCell();
+    console.log("returned from getValueInReadWriteCell: " + returnValue);
+    let currentValue = Number(returnValue);
     console.log("current value: " + currentValue);
-    
+    if (isNaN(currentValue)) {
+        console.log("currentValue isn't a number");
+        valueToWrite = 1;
+    }
+    else {
+        console.log("currentValue is a number")
+        valueToWrite++;
+    }
+
     console.log("in writeToSheet. Writing value: " + valueToWrite);
     // console.log("gapi.client:");
     // console.log(gapi.client);
@@ -143,10 +154,10 @@ export async function writeToSheetTest() {
     try {
         response = await gapi.client.sheets.spreadsheets.values.update({
             spreadsheetId: "1YZWmLktxzprYWLZDHopC0vsz_Z44eavyHyo0lgWsSj4",
-            range: "notes!C2:C2",
+            range: "readwrite",
             valueInputOption: 'USER_ENTERED',
             // resource: { values: [[value]] }
-            resource: { values: [[3]] }
+            resource: { values: [[valueToWrite]] }
         });
     } catch (err) {
         console.log("err:");
