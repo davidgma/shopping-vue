@@ -109,7 +109,7 @@ class ListItem {
 
 async function getValueInCell(rangeName) {
     await setUpRead();
-    console.log("in getValueInCell");
+    // console.log("in getValueInCell");
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.get({
@@ -122,11 +122,11 @@ async function getValueInCell(rangeName) {
     }
     const range = response.result;
     if (!range || !range.values || range.values.length == 0) {
-        console.log("empty value returned");
+        // console.log("empty value returned");
         return "";
     }
 
-    console.log("values returned: " + range.values[0][0]);
+    // console.log("values returned: " + range.values[0][0]);
     return range.values[0][0];
 }
 
