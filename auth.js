@@ -1,5 +1,5 @@
 import { state } from './addresses-view.js';
-import { canRead, canWrite } from './sheets.js';
+import { canWrite, getAllListItems } from './sheets.js';
 
 // Discovery doc URL for APIs used by the quickstart
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
@@ -17,7 +17,14 @@ Promise.all(promises).then(async () => {
   console.log("gis, gapi, vue and window loaded");
 
   // This is always needed
-  setUpRead();
+  setUpRead().then(() => {
+    // temp
+    // console.log("calling getAllListItems:")
+    // getAllListItems();
+  });
+
+
+
 });
 // *******************
 

@@ -80,10 +80,10 @@ export const AddressesView = {
     }
 
     async function getItems() {
-      if (! await canRead()) {
-        await setUpReadAccess();
-        console.log("finished setting up read access.");
-      }
+      // if (! await canRead()) {
+      //   await setUpReadAccess();
+      //   console.log("finished setting up read access.");
+      // }
       // console.log("calling getAllListItems");
       await getAllListItems();
       // console.log("List items finished being retrieved.");

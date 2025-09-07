@@ -37,8 +37,8 @@ export async function canWrite() {
 
 // Get all the items from the shopping list
 export async function getAllListItems() {
-    await setUpRead();
-    console.log("in getAllListItems");
+    // await setUpRead();
+    // console.log("In getAllListItems");
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.get({
