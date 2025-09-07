@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { useStorage } from 'vueuse';
 import { setupResults } from './setup-view.js';
 import { canRead, canWrite, getAllListItems, incrementTest } from './sheets.js';
-import { setUpRead, setUpWrite, canReadProxy, canWriteProxy } from './auth.js';
+import { setUpRead, setUpWrite, canReadProxy } from './auth.js';
 
 
 const theDefault = {
@@ -12,6 +12,7 @@ const theDefault = {
   range: "list",
   authenticationToken: "",
   accessToken: "",
+  accessTokenExpiry: null, // number of seconds since 1970, when token expires
   version: 1
 }
 
@@ -36,7 +37,6 @@ export const AddressesView = {
 
 <article class="container">
 <button class="addresses-button"  @click="showReadWriteStatus();">Show status</button>
-<button class="addresses-button"  @click="setUpReadAccess();">Set Up Read Access</button>
 <button class="addresses-button"  @click="setUpWriteAccess();">Set up write access</button>
 <button class="addresses-button"  @click="incrementTest();">Increment test</button>
 <button class="addresses-button"  @click="getItems();">Get the items</button>
@@ -52,18 +52,16 @@ export const AddressesView = {
     async function showReadWriteStatus() {
       setupResults.value.push("ReadWrite status at " + (new Date().toLocaleString()) + " :");
       setupResults.value.push("Can read proxy: " + canReadProxy());
-      setupResults.value.push("Can write proxy: " + canWriteProxy());
       const canReadResult = await canRead();
       setupResults.value.push("Can read: " + canReadResult);
       const canWriteResult = await canWrite();
       setupResults.value.push("Can write: " + canWriteResult);
+      if (canWriteResult) {
+        setupResults.value.push("Expiry of write access: " + (new Date(state.value.accessTokenExpiry)).toLocaleString());
+        console.log(state.value.accessTokenExpiry);
+      }
 
 
-    }
-
-    async function setUpReadAccess() {
-      await setUpRead();
-      setupResults.value.push("Read access finished being set up");
     }
 
     async function setUpWriteAccess() {
@@ -83,7 +81,7 @@ export const AddressesView = {
     }
 
     return {
-      state, showReadWriteStatus, setUpReadAccess, setUpWriteAccess, getItems, incrementTest
+      state, showReadWriteStatus, setUpWriteAccess, getItems, incrementTest
 
     };
   }

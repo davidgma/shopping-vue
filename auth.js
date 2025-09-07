@@ -5,9 +5,6 @@ import { canRead, canWrite } from './sheets.js';
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
-// Whether a valid (ie not-yet-expired) access token for write access exists
-let hasValidAccessId = false;
-
 // This is needed to wait for the access token callback
 let accessPromise;
 
@@ -55,13 +52,6 @@ export function canReadProxy() {
     && (gapi.client.sheets !== undefined));
 }
 
-// Estimates quickly whether it is likely that writing is allowed
-export function canWriteProxy() {
-  return (canReadProxy
-    && (state.value.accessToken !== null));
-}
-
-
 // **************************
 // Readonly access via API key
 // *****************************
@@ -99,6 +89,8 @@ export async function setUpRead() {
     else {
       console.log("Already have read access.");
     }
+
+
   });
 }
 
@@ -121,12 +113,13 @@ async function gotToken(tokenResponse) {
   console.log("in gotToken");
   if (tokenResponse && tokenResponse.access_token) {
     state.value.accessToken = tokenResponse.access_token;
+    state.value.accessTokenExpiry = (new Date()).valueOf() + (tokenResponse.expires_in * 1000);
+    console.log("expiry of new token: " + state.value.accessTokenExpiry.toLocaleString());
     // set the accessToken to null when it expires
     setTimeout(() => {
       state.value.accessToken = null;
+      state.value.accessTokenExpiry = null;
       gapi.client.setToken(null);
-      // gapi.auth.setToken(null);
-
     }, (tokenResponse.expires_in - 10) * 1000);
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
@@ -137,9 +130,8 @@ async function gotToken(tokenResponse) {
 // Set up write access
 export async function setUpWrite() {
   await Promise.all(promises).then(async () => {
-    // if (! await canWrite()) {
-    if (!canWriteProxy()) {
-
+    if (! await canWrite()) {
+      console.log("in setUpWrite")
       // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. 
       await getTokenClient();
 
@@ -149,7 +141,9 @@ export async function setUpWrite() {
         console.log("Reusing existing access token...");
         gapi.client.setToken({ access_token: state.value.accessToken });
       }
-      else {
+
+      // Retest as the existing token might be bad
+      if (! await canWrite()) {
         return new Promise(async (resolve, reject) => {
           tokenClient.requestAccessToken({ prompt: '' });
           // tokenClient.requestAccessToken();

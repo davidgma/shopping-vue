@@ -235,3 +235,17 @@ if (! await canWrite()) {
     accessPromise = { resolve, reject }
   });
 }
+
+// One-off check that there isn't an old expired state.value.accessToken
+const canWriteActual = await canWrite();
+if (!canWriteActual && state.value.accessToken !== null) {
+  state.value.accessToken = null;
+}
+
+// Estimates quickly whether it is likely that writing is allowed
+export function canWriteProxy() {
+  return (canReadProxy
+    && (state.value.accessToken !== null));
+}
+{/* <button class="addresses-button"  @click="setUpReadAccess();">Set Up Read Access</button> */}
+
