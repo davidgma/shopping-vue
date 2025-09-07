@@ -17,13 +17,7 @@ Promise.all(promises).then(async () => {
   console.log("gis, gapi, vue and window loaded");
 
   // This is always needed
-  setUpRead().then(() => {
-    // temp
-    // console.log("calling getAllListItems:")
-    // getAllListItems();
-  });
-
-
+  await setUpRead();
 
 });
 // *******************
