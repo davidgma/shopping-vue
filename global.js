@@ -6,12 +6,20 @@ let tokenClient;
 const promises = [];
 let gisPromise;
 let gapiPromise;
-// let accountInitPromise;
+let windowPromise;
+let vueMountedPromise;
+
 promises.push(new Promise((resolve, reject) => {
     gisPromise = {resolve, reject}
 }));
 promises.push(new Promise((resolve, reject) => {
     gapiPromise = {resolve, reject}
+}));
+promises.push(new Promise((resolve, reject) => {
+    windowPromise = {resolve, reject}
+}));
+promises.push(new Promise((resolve, reject) => {
+    vueMountedPromise = {resolve, reject}
 }));
 
 
@@ -23,4 +31,9 @@ function gisLoaded() {
 function gapiLoaded() {
     console.log("gapi loaded");
     gapiPromise.resolve();
+}
+
+window.onload = function () {
+    console.log("window loaded");
+    windowPromise.resolve();
 }

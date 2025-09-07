@@ -249,3 +249,71 @@ export function canWriteProxy() {
 }
 {/* <button class="addresses-button"  @click="setUpReadAccess();">Set Up Read Access</button> */}
 
+<div id="google"></div>
+initGoogleSignIn();
+
+// Initialise the google sign in button 
+function initGoogleSignIn() {
+  console.log("About to call google.accounts.id.initialize to initialize the Google Sign In button.");
+  google.accounts.id.initialize({
+    auto_select: true,
+    client_id: state.value.clientId,
+    callback: handleCredentialResponse,
+    prompt_parent_id: 'google'
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("google"),
+    { theme: "outline", size: "large" }  // customization attributes
+  );
+}
+
+function handleCredentialResponse(response) {
+  // console.log("In handleCredentialResponse");
+  // setupResults.value.push("In handleCredentialResponse");
+
+  // credentialResponse = response.credential;
+  state.value.authenticationToken = response.credential;
+  // setupResults.value.push("Encoded JWT ID token: " + response.credential);
+
+  const responsePayload = decodeJwtResponse(response.credential);
+  // setupResults.value.push("Decoded JWT ID token: ");
+  // setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
+  tokenClient.requestAccessToken();
+}
+// **************************
+// Google sign-in button. This could be used instead of authorise.
+// *****************************
+
+window.onload = function () {
+ 
+  
+}
+
+
+{/* <button class="addresses-button" @click="tokenClient.requestAccessToken();">Authorize me (make auto or remove?)</button> */}
+
+function decodeJwtResponse(token) {
+  let base64Url = token.split('.')[1];
+  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+}
+
+function formatJWT(token) {
+  const a = new Array();
+  a.push("ID: " + token.sub);
+  a.push('Full Name: ' + token.name);
+  a.push('Given Name: ' + token.given_name);
+  a.push('Family Name: ' + token.family_name);
+  a.push("Image URL: " + token.picture);
+  a.push("Email: " + token.email);
+  a.push("Client ID: " + token.aud);
+  a.push("Google account ID: " + token.sub);
+  a.push("Creation time: " + new Date(token.iat * 1000).toString());
+  a.push("Expiration time: " + new Date(token.exp * 1000).toString());
+  return a;
+}

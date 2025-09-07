@@ -1,8 +1,8 @@
-import { ref } from 'vue';
+import { onMounted } from 'vue';
 import { useStorage } from 'vueuse';
 import { setupResults } from './setup-view.js';
 import { canRead, canWrite, getAllListItems, incrementTest } from './sheets.js';
-import { setUpRead, setUpWrite, canReadProxy } from './auth.js';
+import { setUpWrite, canReadProxy, canWriteProxy } from './auth.js';
 
 
 const theDefault = {
@@ -17,6 +17,12 @@ const theDefault = {
 }
 
 export const state = useStorage('local', theDefault, localStorage, { mergeDefaults: true });
+// console.log("useStorage called");
+// console.log("state.values.accessToken: ");
+// console.log(state.values.accessToken)
+// console.log("state.values.accessToken above");
+
+
 
 export const AddressesView = {
   template: `
@@ -40,7 +46,7 @@ export const AddressesView = {
 <button class="addresses-button"  @click="setUpWriteAccess();">Set up write access</button>
 <button class="addresses-button"  @click="incrementTest();">Increment test</button>
 <button class="addresses-button"  @click="getItems();">Get the items</button>
-<button class="addresses-button" @click="tokenClient.requestAccessToken();">Authorize me (make auto or remove?)</button>
+
 </article>
 
 <setup-view />
@@ -48,12 +54,17 @@ export const AddressesView = {
 
   setup() {
 
+    onMounted(() => {
+      console.log(`the component is now mounted.`);
+      vueMountedPromise.resolve();
+    });
 
     async function showReadWriteStatus() {
       setupResults.value.push("ReadWrite status at " + (new Date().toLocaleString()) + " :");
       setupResults.value.push("Can read proxy: " + canReadProxy());
       const canReadResult = await canRead();
       setupResults.value.push("Can read: " + canReadResult);
+      setupResults.value.push("Can write proxy: " + canWriteProxy());
       const canWriteResult = await canWrite();
       setupResults.value.push("Can write: " + canWriteResult);
       if (canWriteResult) {

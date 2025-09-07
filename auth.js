@@ -14,42 +14,25 @@ let accessPromise;
 // Run when the gapi and gis scripts have loaded
 // *******************
 Promise.all(promises).then(async () => {
-  console.log("gis and gapi loaded");
+  console.log("gis, gapi, vue and window loaded");
 
   // This is always needed
   setUpRead();
 });
 // *******************
 
-function decodeJwtResponse(token) {
-  let base64Url = token.split('.')[1];
-  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
 
-  return JSON.parse(jsonPayload);
-}
-
-function formatJWT(token) {
-  const a = new Array();
-  a.push("ID: " + token.sub);
-  a.push('Full Name: ' + token.name);
-  a.push('Given Name: ' + token.given_name);
-  a.push('Family Name: ' + token.family_name);
-  a.push("Image URL: " + token.picture);
-  a.push("Email: " + token.email);
-  a.push("Client ID: " + token.aud);
-  a.push("Google account ID: " + token.sub);
-  a.push("Creation time: " + new Date(token.iat * 1000).toString());
-  a.push("Expiration time: " + new Date(token.exp * 1000).toString());
-  return a;
-}
 
 // Estimates quickly whether it is likely that reading is allowed
 export function canReadProxy() {
   return ((gapi.client !== undefined)
     && (gapi.client.sheets !== undefined));
+}
+
+// Estimates quickly whether it is likely that writing is allowed
+export function canWriteProxy() {
+  return (canReadProxy
+    && (state.value.accessToken !== null));
 }
 
 // **************************
@@ -81,10 +64,25 @@ export async function setUpRead() {
   await Promise.all(promises).then(async () => {
     if (!canReadProxy()) {
       // This sets up the gapi client for readonly access using the API key
-      console.log("Calling gapiLoadClient");
+      // console.log("Calling gapiLoadClient");
       await gapiLoadClient();
-      console.log("calling initializeGapiClient");
+      // console.log("calling initializeGapiClient");
       await initializeGapiClient();
+
+      // If there's already an access token, check it hasn't expired
+      if (state.value.accessToken !== null) {
+        if (state.value.accessTokenExpiry !== null) {
+          const expiryDate = new Date(state.value.accessTokenExpiry);
+          if (expiryDate <= (new Date())) { // It's expired
+            state.value.accessToken = null;
+            state.value.accessTokenExpiry = null;
+            gapi.client.setToken(null);
+          }
+          else { // It's going to expire
+            prepareTokenExpiry();
+          }
+        }
+      }
     }
     else {
       console.log("Already have read access.");
@@ -101,7 +99,6 @@ export async function setUpRead() {
 
 // This sets up, but doesn't call, readwrite access
 async function getTokenClient() {
-  console.log("In getTokenClient");
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: state.value.clientId,
     scope: SCOPES,
@@ -110,28 +107,32 @@ async function getTokenClient() {
 }
 
 async function gotToken(tokenResponse) {
-  console.log("in gotToken");
   if (tokenResponse && tokenResponse.access_token) {
     state.value.accessToken = tokenResponse.access_token;
     state.value.accessTokenExpiry = (new Date()).valueOf() + (tokenResponse.expires_in * 1000);
     console.log("expiry of new token: " + state.value.accessTokenExpiry.toLocaleString());
-    // set the accessToken to null when it expires
-    setTimeout(() => {
-      state.value.accessToken = null;
-      state.value.accessTokenExpiry = null;
-      gapi.client.setToken(null);
-    }, (tokenResponse.expires_in - 10) * 1000);
+    prepareTokenExpiry();
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
     accessPromise.resolve();
   }
 }
 
+function prepareTokenExpiry() {
+  // set the accessToken to null when it expires
+  const millisecondsToExpiry = state.value.accessTokenExpiry - (new Date()).valueOf();
+  setTimeout(() => {
+    state.value.accessToken = null;
+    state.value.accessTokenExpiry = null;
+    gapi.client.setToken(null);
+  }, (millisecondsToExpiry));
+}
+
 // Set up write access
 export async function setUpWrite() {
   await Promise.all(promises).then(async () => {
     if (! await canWrite()) {
-      console.log("in setUpWrite")
+      // console.log("in setUpWrite")
       // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. 
       await getTokenClient();
 
@@ -160,41 +161,3 @@ export async function setUpWrite() {
   });
 }
 
-
-// **************************
-// Google sign-in button. This could be used instead of authorise.
-// *****************************
-
-window.onload = function () {
-  initGoogleSignIn();
-}
-
-// Initialise the google sign in button 
-function initGoogleSignIn() {
-  console.log("About to call google.accounts.id.initialize to initialize the Google Sign In button.");
-  google.accounts.id.initialize({
-    auto_select: true,
-    client_id: state.value.clientId,
-    callback: handleCredentialResponse,
-    prompt_parent_id: 'google'
-  });
-
-  google.accounts.id.renderButton(
-    document.getElementById("google"),
-    { theme: "outline", size: "large" }  // customization attributes
-  );
-}
-
-function handleCredentialResponse(response) {
-  // console.log("In handleCredentialResponse");
-  // setupResults.value.push("In handleCredentialResponse");
-
-  // credentialResponse = response.credential;
-  state.value.authenticationToken = response.credential;
-  // setupResults.value.push("Encoded JWT ID token: " + response.credential);
-
-  const responsePayload = decodeJwtResponse(response.credential);
-  // setupResults.value.push("Decoded JWT ID token: ");
-  // setupResults.value = setupResults.value.concat(formatJWT(responsePayload));
-  tokenClient.requestAccessToken();
-}
