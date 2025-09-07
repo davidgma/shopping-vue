@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { useStorage } from 'vueuse';
 import { setupResults } from './setup-view.js';
 import { canRead, canWrite, getAllListItems, incrementTest } from './sheets.js';
-import { setUpRead, setUpWrite } from './auth.js';
+import { setUpRead, setUpWrite, canReadProxy, canWriteProxy } from './auth.js';
 
 
 const theDefault = {
@@ -51,9 +51,10 @@ export const AddressesView = {
 
     async function showReadWriteStatus() {
       setupResults.value.push("ReadWrite status at " + (new Date().toLocaleString()) + " :");
+      setupResults.value.push("Can read proxy: " + canReadProxy());
+      setupResults.value.push("Can write proxy: " + canWriteProxy());
       const canReadResult = await canRead();
       setupResults.value.push("Can read: " + canReadResult);
-
       const canWriteResult = await canWrite();
       setupResults.value.push("Can write: " + canWriteResult);
 

@@ -199,3 +199,39 @@ export async function isAccessTokenValid() {
   }
   return true;
 }
+
+
+// this returned false even though the session was valid
+gapi.auth.checkSessionState({client_id: "285838277656-epg5b87qpis468k0r6crifeiq8m68djf.apps.googleusercontent.com"}, (result) => {console.log(result)});
+
+
+let alreadyLoaded = true; // if true then the gapi client was already loaded yet the spreadsheet is unreadable. The most likely explanation is that a previous access_token has expired and needs to be cleaned out.
+
+if (gapi.client === undefined) {
+  // This sets up the gapi client for readonly access using the API key
+  console.log("Calling gapiLoadClient");
+  await gapiLoadClient(); 
+  alreadyLoaded = false;
+}
+if (gapi.client.sheets === undefined) {
+  console.log("calling initializeGapiClient");
+  await initializeGapiClient();
+  console.log("finished calling initializeGapiClient");
+  alreadyLoaded = false;
+}
+// If alreadyLoaded is still true by this stage then the access_token has probably expired and needs to be set to null
+if (alreadyLoaded) {
+  gapi.auth.setToken(null);
+}
+
+
+if (! await canWrite()) {
+  return new Promise(async (resolve, reject) => {
+    tokenClient.requestAccessToken({ prompt: '' });
+    // tokenClient.requestAccessToken();
+    // This doesn't return anything, but calls the callback defined in google.accounts.oauth2.initTokenClient() call
+    tokenClient.requestAccessToken();
+    // Wait for the resolve from the callback from the authorisation routine
+    accessPromise = { resolve, reject }
+  });
+}

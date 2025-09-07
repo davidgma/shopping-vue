@@ -5,8 +5,13 @@ import { canRead, canWrite } from './sheets.js';
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
+// Whether a valid (ie not-yet-expired) access token for write access exists
+let hasValidAccessId = false;
+
 // This is needed to wait for the access token callback
 let accessPromise;
+
+// let credentialResponse = null; // credential response
 
 // *******************
 // Run when the gapi and gis scripts have loaded
@@ -18,8 +23,6 @@ Promise.all(promises).then(async () => {
   setUpRead();
 });
 // *******************
-
-let credentialResponse = null; // credential response
 
 function decodeJwtResponse(token) {
   let base64Url = token.split('.')[1];
@@ -45,6 +48,19 @@ function formatJWT(token) {
   a.push("Expiration time: " + new Date(token.exp * 1000).toString());
   return a;
 }
+
+// Estimates quickly whether it is likely that reading is allowed
+export function canReadProxy() {
+  return ((gapi.client !== undefined)
+    && (gapi.client.sheets !== undefined));
+}
+
+// Estimates quickly whether it is likely that writing is allowed
+export function canWriteProxy() {
+  return (canReadProxy
+    && (state.value.accessToken !== null));
+}
+
 
 // **************************
 // Readonly access via API key
@@ -73,15 +89,12 @@ async function initializeGapiClient() {
 // Set up read access
 export async function setUpRead() {
   await Promise.all(promises).then(async () => {
-    if (! await canRead()) {
+    if (!canReadProxy()) {
       // This sets up the gapi client for readonly access using the API key
-      console.log("calling gapiLoadClient");
+      console.log("Calling gapiLoadClient");
       await gapiLoadClient();
       console.log("calling initializeGapiClient");
       await initializeGapiClient();
-      console.log("finished calling initializeGapiClient");
-      // console.log("gapi.client.getToken()");
-      // console.log(gapi.client.getToken());
     }
     else {
       console.log("Already have read access.");
@@ -108,6 +121,13 @@ async function gotToken(tokenResponse) {
   console.log("in gotToken");
   if (tokenResponse && tokenResponse.access_token) {
     state.value.accessToken = tokenResponse.access_token;
+    // set the accessToken to null when it expires
+    setTimeout(() => {
+      state.value.accessToken = null;
+      gapi.client.setToken(null);
+      // gapi.auth.setToken(null);
+
+    }, (tokenResponse.expires_in - 10) * 1000);
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
     accessPromise.resolve();
@@ -117,21 +137,19 @@ async function gotToken(tokenResponse) {
 // Set up write access
 export async function setUpWrite() {
   await Promise.all(promises).then(async () => {
-    if (! await canWrite()) {
+    // if (! await canWrite()) {
+    if (!canWriteProxy()) {
 
       // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. 
       await getTokenClient();
 
-      // First try re-using an existing access token in case it's still valid
-      // console.log("Trying to reuse existing token...");
-      // console.log("state.value.accessToken:");
-      // console.log(state.value.accessToken);
+      // First try re-using an existing access token in case it's still valid.
+      // Only valid tokens should be held
       if (state.value.accessToken !== null) {
         console.log("Reusing existing access token...");
         gapi.client.setToken({ access_token: state.value.accessToken });
       }
-
-      if (! await canWrite()) {
+      else {
         return new Promise(async (resolve, reject) => {
           tokenClient.requestAccessToken({ prompt: '' });
           // tokenClient.requestAccessToken();
@@ -141,9 +159,6 @@ export async function setUpWrite() {
           accessPromise = { resolve, reject }
         });
       }
-
-
-
     }
     else {
       console.log("Already have write access.");
@@ -180,7 +195,7 @@ function handleCredentialResponse(response) {
   // console.log("In handleCredentialResponse");
   // setupResults.value.push("In handleCredentialResponse");
 
-  credentialResponse = response.credential;
+  // credentialResponse = response.credential;
   state.value.authenticationToken = response.credential;
   // setupResults.value.push("Encoded JWT ID token: " + response.credential);
 
