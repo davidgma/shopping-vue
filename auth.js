@@ -100,7 +100,7 @@ async function getTokenClient() {
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: state.value.clientId,
     scope: SCOPES,
-    callback: gotToken // defined later
+    callback: gotToken
   });
 }
 

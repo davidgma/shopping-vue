@@ -50,7 +50,7 @@ export const AddressesView = {
 
 
     async function showReadWriteStatus() {
-      setupResults.value.push("ReadWrite status:");
+      setupResults.value.push("ReadWrite status at " + (new Date().toLocaleString()) + " :");
       const canReadResult = await canRead();
       setupResults.value.push("Can read: " + canReadResult);
 
