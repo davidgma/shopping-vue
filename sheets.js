@@ -37,8 +37,6 @@ export async function canWrite() {
 
 // Get all the items from the shopping list
 export async function getAllListItems() {
-    // await setUpRead();
-    // console.log("In getAllListItems");
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.get({
@@ -148,17 +146,9 @@ export async function incrementTest() {
         valueToWrite = 1;
     }
     else {
-        // console.log("currentValue is a number: " + currentValue)
         valueToWrite = currentValue + 1;
     }
 
-    // console.log("in writeToSheet. Writing value: " + valueToWrite);
-    // console.log("gapi.client:");
-    // console.log(gapi.client);
-    // console.log("gapi.auth2:");
-    // console.log(gapi.auth2);
-    // console.log("gapi.client.sheets.spreadsheets.values:");
-    // console.log(gapi.client.sheets.spreadsheets.values);
     let response;
     try {
         response = await gapi.client.sheets.spreadsheets.values.update({

@@ -5,6 +5,12 @@ import { canWrite } from './sheets.js';
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
+export const authPromises = [];
+let readPromise;
+authPromises.push(new Promise((resolve, reject) => {
+  readPromise = {resolve, reject}
+}));
+
 // *******************
 // Run when the gapi and gis scripts have loaded
 // *******************
@@ -89,7 +95,8 @@ export async function setUpRead() {
     else {
       console.log("Already have read access.");
     }
-
+    
+    readPromise.resolve();
 
   });
 }
