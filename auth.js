@@ -1,14 +1,9 @@
 import { state } from './addresses-view.js';
-import { canWrite, getAllListItems } from './sheets.js';
+import { canWrite } from './sheets.js';
 
 // Discovery doc URL for APIs used by the quickstart
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
-
-// This is needed to wait for the access token callback
-let accessPromise;
-
-// let credentialResponse = null; // credential response
 
 // *******************
 // Run when the gapi and gis scripts have loaded
@@ -121,7 +116,6 @@ async function gotToken(tokenResponse) {
     prepareTokenExpiry();
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
-    accessPromise.resolve();
   }
 }
 
@@ -142,10 +136,6 @@ export async function setUpWrite() {
       return new Promise(async (resolve, reject) => {
         tokenClient.requestAccessToken({ prompt: '' });
         // tokenClient.requestAccessToken();
-        // This doesn't return anything, but calls the callback defined in google.accounts.oauth2.initTokenClient() call
-        tokenClient.requestAccessToken();
-        // Wait for the resolve from the callback from the authorisation routine
-        accessPromise = { resolve, reject }
       });
     }
     else {
