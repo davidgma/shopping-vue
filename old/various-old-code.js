@@ -317,3 +317,39 @@ function formatJWT(token) {
   a.push("Expiration time: " + new Date(token.exp * 1000).toString());
   return a;
 }
+
+if (! await canWrite()) {
+  // console.log("in setUpWrite")
+  // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. 
+  await getTokenClient();
+
+  // First try re-using an existing access token in case it's still valid.
+  // Only valid tokens should be held
+  if (state.value.accessToken !== null) {
+    console.log("Reusing existing access token...");
+    gapi.client.setToken({ access_token: state.value.accessToken });
+  }
+
+  // Retest as the existing token might be bad
+  if (! await canWrite()) {
+    return new Promise(async (resolve, reject) => {
+      tokenClient.requestAccessToken({ prompt: '' });
+      // tokenClient.requestAccessToken();
+      // This doesn't return anything, but calls the callback defined in google.accounts.oauth2.initTokenClient() call
+      tokenClient.requestAccessToken();
+      // Wait for the resolve from the callback from the authorisation routine
+      accessPromise = { resolve, reject }
+    });
+  }
+}
+else {
+  console.log("Already have write access.");
+
+}
+
+// First try re-using an existing access token in case it's still valid.
+      // Only valid tokens should be held
+      if (state.value.accessToken !== null) {
+        console.log("Reusing existing access token...");
+        gapi.client.setToken({ access_token: state.value.accessToken });
+      }

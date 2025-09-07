@@ -65,12 +65,11 @@ export const AddressesView = {
       const canReadResult = await canRead();
       setupResults.value.push("Can read: " + canReadResult);
       setupResults.value.push("Can write proxy: " + canWriteProxy());
+      if (canWriteProxy()) {
+        setupResults.value.push("Expiry of write access: " + (new Date(state.value.accessTokenExpiry)).toLocaleString());
+      }
       const canWriteResult = await canWrite();
       setupResults.value.push("Can write: " + canWriteResult);
-      if (canWriteResult) {
-        setupResults.value.push("Expiry of write access: " + (new Date(state.value.accessTokenExpiry)).toLocaleString());
-        console.log(state.value.accessTokenExpiry);
-      }
 
 
     }

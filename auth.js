@@ -69,6 +69,9 @@ export async function setUpRead() {
       // console.log("calling initializeGapiClient");
       await initializeGapiClient();
 
+      // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. It's really for the readwrite but it's better doing it here because it only needs to be called once per initial page load.
+      await getTokenClient();
+
       // If there's already an access token, check it hasn't expired
       if (state.value.accessToken !== null) {
         if (state.value.accessTokenExpiry !== null) {
@@ -80,6 +83,9 @@ export async function setUpRead() {
           }
           else { // It's going to expire
             prepareTokenExpiry();
+            // If there's already an access token, we might as well use it here
+            console.log("Reusing existing access token...");
+            gapi.client.setToken({ access_token: state.value.accessToken });
           }
         }
       }
@@ -132,28 +138,14 @@ function prepareTokenExpiry() {
 export async function setUpWrite() {
   await Promise.all(promises).then(async () => {
     if (! await canWrite()) {
-      // console.log("in setUpWrite")
-      // This sets up, but doesn't call, the readwrite authorisation and the access token using the client id and API key. 
-      await getTokenClient();
-
-      // First try re-using an existing access token in case it's still valid.
-      // Only valid tokens should be held
-      if (state.value.accessToken !== null) {
-        console.log("Reusing existing access token...");
-        gapi.client.setToken({ access_token: state.value.accessToken });
-      }
-
-      // Retest as the existing token might be bad
-      if (! await canWrite()) {
-        return new Promise(async (resolve, reject) => {
-          tokenClient.requestAccessToken({ prompt: '' });
-          // tokenClient.requestAccessToken();
-          // This doesn't return anything, but calls the callback defined in google.accounts.oauth2.initTokenClient() call
-          tokenClient.requestAccessToken();
-          // Wait for the resolve from the callback from the authorisation routine
-          accessPromise = { resolve, reject }
-        });
-      }
+      return new Promise(async (resolve, reject) => {
+        tokenClient.requestAccessToken({ prompt: '' });
+        // tokenClient.requestAccessToken();
+        // This doesn't return anything, but calls the callback defined in google.accounts.oauth2.initTokenClient() call
+        tokenClient.requestAccessToken();
+        // Wait for the resolve from the callback from the authorisation routine
+        accessPromise = { resolve, reject }
+      });
     }
     else {
       console.log("Already have write access.");
