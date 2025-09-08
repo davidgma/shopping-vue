@@ -95,7 +95,7 @@ export async function setUpRead() {
     else {
       console.log("Already have read access.");
     }
-    
+
     readPromise.resolve();
 
   });
@@ -119,7 +119,7 @@ async function gotToken(tokenResponse) {
   if (tokenResponse && tokenResponse.access_token) {
     state.value.accessToken = tokenResponse.access_token;
     state.value.accessTokenExpiry = (new Date()).valueOf() + (tokenResponse.expires_in * 1000);
-    console.log("expiry of new token: " + state.value.accessTokenExpiry.toLocaleString());
+    console.log("expiry of new token: " + (new Date(state.value.accessTokenExpiry)).toLocaleString());
     prepareTokenExpiry();
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
