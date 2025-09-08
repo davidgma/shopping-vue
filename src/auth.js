@@ -1,4 +1,4 @@
-import { state } from './addresses-view.js';
+import { state } from './views/addresses-view.js';
 import { canWrite } from './sheets.js';
 
 // Discovery doc URL for APIs used by the quickstart
@@ -8,8 +8,10 @@ const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 export const authPromises = [];
 let readPromise;
 authPromises.push(new Promise((resolve, reject) => {
-  readPromise = {resolve, reject}
+  readPromise = { resolve, reject }
 }));
+let writePromise;
+
 
 // *******************
 // Run when the gapi and gis scripts have loaded
@@ -19,6 +21,7 @@ Promise.all(promises).then(async () => {
 
   // This is always needed
   await setUpRead();
+ 
 
 });
 // *******************
@@ -115,6 +118,7 @@ async function getTokenClient() {
   });
 }
 
+// This is called after a new readwrite token is obtained
 async function gotToken(tokenResponse) {
   if (tokenResponse && tokenResponse.access_token) {
     state.value.accessToken = tokenResponse.access_token;
@@ -123,6 +127,7 @@ async function gotToken(tokenResponse) {
     prepareTokenExpiry();
     gapi.client.setApiKey(state.value.APIkey);
     gapi.client.load(DISCOVERY_DOC);
+    writePromise.resolve();
   }
 }
 
@@ -140,7 +145,11 @@ function prepareTokenExpiry() {
 export async function setUpWrite() {
   await Promise.all(promises).then(async () => {
     if (! await canWrite()) {
+
+      // This has to be resolved from within gotToken as that's when 
+      // the readwrite access is ready.
       return new Promise(async (resolve, reject) => {
+        writePromise = { resolve, reject }
         tokenClient.requestAccessToken({ prompt: '' });
         // tokenClient.requestAccessToken();
       });

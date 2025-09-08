@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { AddressesView } from './addresses-view.js'
+import { AddressesView } from './views/addresses-view.js'
 import { SetupView } from './setup-view.js'
 
 const app1 = createApp();

@@ -14,23 +14,30 @@
     }
   }
 </script>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./src/styles.css" />
   <title>Shopping</title>
 </head>
 
 <body>
-  <h1>Shopping List v0.18</h1>
+  <h1>Shopping List v0.20</h1>
   
+  <main id="mainapp">
+    <p>
+      <item-listings />
+    </p>
+  </main>
+
   <div id="vueapp1">
     <addresses-view class="addresses" />
   </div>
-  <script src="global.js"></script>
+
+  <script src="./src/global.js"></script>
   <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
   <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-  <script type="module" src="addresses-view.js"></script>
-  <script type="module" src="vue-app1.js"></script>
-  <script type="module" src="sheets.js"></script>
-  <script type="module" src="auth.js"></script>
+  <script type="module" src="./src/views/addresses-view.js"></script>
+  <script type="module" src="./src/vue-app1.js"></script>
+  <script type="module" src="./src/vue-app2.js"></script>
+  <script type="module" src="./src/auth.js"></script>
 
 </body>
 

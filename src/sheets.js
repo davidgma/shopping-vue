@@ -1,4 +1,4 @@
-import { state } from './addresses-view.js';
+import { state } from './views/addresses-view.js';
 import { setupResults } from './setup-view.js';
 import { setUpRead, setUpWrite } from './auth.js';
 
@@ -41,7 +41,7 @@ export async function getAllListItems() {
     try {
         response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.value.spreadsheetId,
-            range: state.value.range,
+            range: state.value.listRange,
         });
     } catch (err) {
         setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
@@ -77,7 +77,7 @@ export async function getAllListItems() {
                 notes = rowData[6];
 
             let item = new ListItem(rowNumber, itemName, needed, source, typeName, brand, lastBought, notes);
-            setupResults.value.push(item.itemName + ", " + item.needed + ", " + item.source);
+            // setupResults.value.push(item.itemName + ", " + item.needed + ", " + item.source);
             listItems.push(item);
         }
     }
@@ -130,7 +130,7 @@ async function getValueInCell(rangeName) {
 
 export async function incrementTest() {
     await setUpWrite();
-
+    console.log("setUpWrite has finished")
     let valueToWrite;
     const returnValue = await getValueInCell("increment");
     // console.log("returned from getValueInCell: " + returnValue);

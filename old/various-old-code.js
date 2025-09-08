@@ -393,3 +393,10 @@ else {
 
 </html>
 */
+
+/* 
+<div class="form-group">
+		<label>Range for testing e.g. Sheet1!A1:C or range name e.g. list</label>
+		<input v-model="state.range" type="text" :placeholder="range" class="form-control" id="range" name="range">
+	</div>
+  */
