@@ -1,5 +1,5 @@
 import { state } from './views/addresses-view.js';
-import { canWrite } from './sheets.js';
+import { canWrite, getCookies } from './sheets.js';
 
 // Discovery doc URL for APIs used by the quickstart
 const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
@@ -21,7 +21,8 @@ Promise.all(promises).then(async () => {
 
   // This is always needed
   await setUpRead();
- 
+  state.value.cookiesData = await getCookies();
+
 
 });
 // *******************

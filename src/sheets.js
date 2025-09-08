@@ -167,3 +167,33 @@ export async function incrementTest() {
     }
 }
 
+// Get all the cookies from the spreadsheet
+export async function getCookies() {
+    let response;
+    try {
+        // console.log("state.value.cookiesRange:");
+        // console.log(state.value.cookiesRange);
+        response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.value.spreadsheetId,
+            range: state.value.cookiesRange,
+        });
+    } catch (err) {
+        setupResults.value.push("Error retrieving spreadsheet data: " + err.result.error.message);
+        return;
+    }
+    const range = response.result;
+    if (!range || !range.values || range.values.length == 0) {
+        setupResults.value.push('No values found in spreadsheet.');
+        return;
+    }
+
+    // console.log(range);
+    let dataReturned = range.values;
+    let cookiesArray = new Array();
+    for (let row = 1; row < dataReturned.length; row++) {
+        let rowData = dataReturned[row];
+        cookiesArray.push(rowData[0]);
+    }
+    return cookiesArray;
+}
+

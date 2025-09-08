@@ -5,6 +5,9 @@ import { authPromises } from '../auth.js';
 
 export const ItemListings = {
     template: `
+
+    <p><cookie-view /></p>
+
      <p v-if="dataState.isLoading" class="container">Loading...</p>
      <p v-else>
     <h3>Items needed now</h3>
